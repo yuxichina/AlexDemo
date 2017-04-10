@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">       
+        var map, control, layer, glayer;
+        var movestart = false;
+        //平移开始点地理坐标
+        var holdGeoPoint = null;
+        //平移开始点像素所标
+        var holdPoint = null;
+        //平移开始container位置
+        var holdPosition = null;
+
+        //var holdCenter = null;
+        var svgLayer_point;
+        var svgLayer_location;
+        var scalestart = false;
+        //var vmouseGeo = null;
+        //var scaleExtent = null;
+        var vmousePoint = null;
+        var vmouseGeos = null;
+        var vmousePoints = null;
+        var paning = false;
+        $(document).ready(function () {
+            var h = $(document).height();
+            var w = $(document).width();
+            $("#MapContainer").width(w).height(h);
+
+            $("#MapContainer").bind('touchend', function (event) {
+                event = event.originalEvent;
+                alert(event.touches.length);
+
+            });
+
+        }); 
+    </script>
+
+    <style>
+    body,html,div
+    {
+        
+            padding:0px;
+            margin:0px;
+        }
+   
+    
+    </style>
+</head>
+<body>
+   <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative;
+                padding: 0px; margin: 0px; ">
+                
+   </div>
+</body>
+</html>

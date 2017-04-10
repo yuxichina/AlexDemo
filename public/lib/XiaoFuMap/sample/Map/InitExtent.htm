@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>初始化范围</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, svgLayer,control;
+        function load() {           
+            var initExtent = new XiaoFu.Extent(12888047.339163566,4816755.774418673,13040921.395733917,4893192.802703848);
+            map = new XiaoFu.Map("#MapContainer",initExtent);
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            layer.picFormat = "png";
+            layer.isBaseLayer = true;
+            map.addLayer(layer);
+            svgLayer = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer);           
+            var myArray_db = new Array(5);
+            myArray_db[0] = initExtent.minX + "$" + initExtent.minY;
+            myArray_db[1] = initExtent.minX + "$" + initExtent.maxY;
+            myArray_db[2] = initExtent.maxX + "$" + initExtent.maxY;
+            myArray_db[3] = initExtent.maxX + "$" + initExtent.minY;
+            myArray_db[4] = initExtent.minX + "$" + initExtent.minY;            
+            var line_db = new XiaoFu.SVG_Line(0, "line0", myArray_db);
+            line_db.stroke = "yellow";
+            line_db.stroke_width = "5";
+            svgLayer.addChild(line_db);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+     
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>       
+    <div id="msg">
+    </div>
+</body>
+</html>

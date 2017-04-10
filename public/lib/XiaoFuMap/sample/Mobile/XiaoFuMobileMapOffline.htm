@@ -1,0 +1,137 @@
+﻿<!DOCTYPE>
+
+<html>
+<head>
+    <title>小付手机地图(离线)</title>
+    
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-app-status-bar-style" content="white" />
+    <link rel="apple-touch-icon"  href="../image/globe.png"/>
+    <link rel="apple-touch-startup-image" href="../image/globe.png" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, svgLayer_polygon, markerLayer, polygon, geoData;
+        var control = null;
+        function load() {
+            if (window.navigator.onLine) {
+                // window.applicationCache.update();
+            }
+//            var watchID = navigator.geolocation.watchPosition(function (evt) {
+//                showMessage("Watch:" + evt.coords.heading + "_" +Math.round(Math.random()* 10000));
+//            }, function () { }, { frequency: 3000 }); 
+            //alert("a");
+            var h = $("body").height() - parseFloat($("#MapContainer").css("border-top-width")) - parseFloat($("#MapContainer").css("border-bottom-width"));
+            var w = $("body").width() - parseFloat($("#MapContainer").css("border-left-width")) - parseFloat($("#MapContainer").css("border-right-width")); ;
+
+            $("#MapContainer").css("width", w).css("height", h);
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            map.addLayer(layer);
+
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+
+            markerLayer = new XiaoFu.MarkerLayers("marker");
+            //markerLayer.isPolymerization = false;
+            map.addLayer(markerLayer);
+
+            $("#MapContainer").message();
+            control = new XiaoFu.Navigation();
+            control.addEventListener("GetLocation", function (evtType, data) {
+                var destProj = new XiaoFu.Projection("EPSG:900913");
+                var sourceProj = new XiaoFu.Projection("WGS84");
+                var pointSource = new XiaoFu.GeoPoint(data.location.x, data.location.y);
+                var transform = new XiaoFu.Transform();
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+                var svg_Geo = new XiaoFu.SVG_Point(0, "location", pointDest[0].x, pointDest[0].y);
+                svg_Geo.fill = "blue";
+                //alert(data.speed);
+                data.location = new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y);
+                geoData = data;
+                //svgLayer_point.addChild(svg_Geo);
+                var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 0, 300);
+                var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                polygon = new XiaoFu.SVG_Polygon(0, "polygon0", gp);
+                polygon.fill = "#C1D5EB";
+                polygon.stroke = "blue";
+                polygon.strokeWidth = "1";
+                svgLayer_polygon.addChild(polygon);
+
+
+                var marker = new XiaoFu.Marker(0, "beijing", pointDest[0].x, pointDest[0].y);
+                marker.w = 20;
+                marker.h = 20;
+
+                marker.url = "../image/bullet-blue.png";
+                markerLayer.addChild(marker);
+                //map.panTo(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y));
+                var path2 = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 3000, 30);
+                var gp2 = new XiaoFu.GeoPolygon([path2], "WGS84");
+                var viewExt = gp2.getExtent();
+                map.viewByExtent(viewExt);
+
+                setTimeout(function () {
+                    showRegionDynamic(0);
+                }, 1000);
+            });
+
+            control.addEventListener("ClearLocation", function (evt) {
+                svgLayer_polygon.removeAll();
+                markerLayer.removeAll();
+                count = 0;
+                step = 0;
+            });
+            map.addControl(control);
+        }
+        var dy = [
+        { from: 10, to: 1, step: 50, time:1000  },
+        { from: 1, to: 3, step: 15, time: 400 },
+        { from: 3, to: 1, step: 15 , time:200}
+        ];
+        var count = 0;
+        var step = 0; 
+        function showRegionDynamic(c) {
+            if (count < dy.length) {
+                if (step == dy[count].step) {
+                    count++;
+                    step = 0;
+                    showRegionDynamic(c);
+                }
+                else if (step < dy[count].step) {
+                    var radio = dy[count].from - step * (dy[count].from - dy[count].to) / dy[count].step;
+                    var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(geoData.location.x, geoData.location.y), geoData.accuracy * radio, 300);
+                    var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                    polygon.geometry = gp;
+                    svgLayer_polygon.updateChild(polygon);
+                    step++;
+                    setTimeout(function () {
+                        showRegionDynamic(c);
+                    },  dy[count].time/ dy[count].step);
+                }
+            }
+
+        }
+
+        function showMessage(msg) {
+            $("#MapContainer").message({ addMessage: { message: msg, timer: 5000, actionType: "immediately", type: "info"} });
+
+        };
+    </script>
+
+    <style type="text/css">
+        html,body,div
+        {
+            padding:0px;
+            margin:0px;
+         }
+    
+    </style>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative;
+        width: 100%; height: 100%;">
+    </div> 
+</body>
+</html>

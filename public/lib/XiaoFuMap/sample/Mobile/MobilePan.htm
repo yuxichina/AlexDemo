@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, control, layer, glayer;
+        function load() {
+           // $("body").height(document.height);
+            $("#MapContainer").width(500).height(500);
+            map = new XiaoFu.Map("#MapContainer");
+            layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            glayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Satellite);
+            glayer.isBaseLayer = false;
+            glayer.setVisiable(false);
+            map.addLayer(glayer);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function showMap(index) {
+            if (index == 1) {
+                glayer.hide();
+                layer.show();
+            }
+            else {
+                glayer.show();
+                layer.hide();
+            }
+        };
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+    </script>
+
+    <style type="text/css">
+    body,html,div
+    {
+        
+            padding:0px;
+            margin:0px;
+        }
+   body,html
+   {
+        height:100%;
+       }
+    
+    </style>
+</head>
+<body onload="load();">
+<div id="MapBox" style="position:absolute;">
+   <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative;
+                padding: 0px; margin: 0px; ">
+                
+   </div>
+   </div>
+</body>
+</html>

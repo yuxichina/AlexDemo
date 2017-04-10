@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html />
+<html>
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+    <script type="text/javascript">
+        function resize() {
+
+
+
+        };
+
+        $(document).bind("mobileinit", function () {
+            alert("a");
+            $("#content").html("mobileinit");
+        });
+        var map, control, layer, glayer;
+        var movestart = false;
+        var holdGeoPoint = null;
+        var holdPoint = null;
+        var holdPoint2 = null;
+        var holdCenter = null;
+        var svgLayer_point;
+        var svgLayer_location;
+        $(document).ready(function () {
+            navigator.geolocation.getCurrentPosition(function (p) {
+                var lat = p.coords.latitude;
+                var lon = p.coords.longitude;
+                $.mobile.showPageLoadingMsg("b", "lat:" + lat + "_lon:" + lon, true);
+                var destProj = new XiaoFu.Projection("EPSG:900913");
+                var sourceProj = new XiaoFu.Projection("WGS84");
+                var pointSource = new XiaoFu.GeoPoint(lon, lat);
+                var transform = new XiaoFu.Transform();
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+
+                var svg_Geo = new XiaoFu.SVG_Point(0, "location", pointDest[0].x, pointDest[0].y);
+                svg_Geo.fill = "blue";
+                map.panTo(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y));
+                svgLayer_location.addChild(svg_Geo);
+            });
+            $.mobile.touchOverflowEnabled = true;
+            //var k = $.mobile.loading();
+            var hh = $("#header").height() + parseInt($("#header").css("border-top-width")) + parseInt($("#header").css("border-bottom-width"));
+            var th = $("body").height();
+            var w = $(document).width();
+            //alert("hh:" + hh);
+            //            alert("th:" + th);
+            //            alert("h:" + (th - hh));
+            //$("#content").html("w:" + w + "<br/>h:" + (th - hh));
+            $.mobile.showPageLoadingMsg("b", "df", true);
+            //$(".ui-loader").removeCss("top");
+            $(".ui-loader").css("bottom", "0");
+            $(".ui-loader").css("top", "auto");
+            $("#MapContainer").width(w).height(th - hh);
+            //$("#MapContainer").width(800).height(500);
+            map = new XiaoFu.Map("#MapContainer");
+            layer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            map.addLayer(layer);
+            glayer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=s@115&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            glayer.isBaseLayer = false;
+            glayer.setVisiable(false);
+            map.addLayer(glayer);
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_point);
+            svgLayer_location = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_location);
+            map._setDraggable(false);
+            // map.dynamicPan = false;
+            console.log("aa");
+            //            $("#MapContainer").swipe(function (event, data) {
+
+            //                //alert("swipe");
+
+            //            });
+            map.addEventListener("loaded", function () {
+                //if (movestart && paning) {
+                paning = false;
+                //}
+
+            });
+            $("#MapContainer").message();
+
+            var k = true;
+            var paning = false;
+            $("#MapContainer").bind('vmousemove', function (event) {
+                event.preventDefault();
+                var px = event.pageX;
+                var py = event.pageY;
+                var startX = $("#MapContainer").offset().left;
+                var startY = $("#MapContainer").offset().top;
+                var x = px - startX;
+                var y = py - startY;
+                x = Math.round(x);
+                y = Math.round(y);
+
+                if (movestart && !paning && !scalestart) {
+                    paning = true;
+                    var point = new XiaoFu.Point(x, y);
+                    var nowGeo = map.pointToMap(point);
+                    var offsetGX = holdGeoPoint.x - nowGeo.x;
+                    var offsetGY = holdGeoPoint.y - nowGeo.y;
+                    var offsetX = holdPoint2.x -( holdPoint.x - point.x);
+                    var offsetY = holdPoint2.y + (holdPoint.y - point.y);
+                    $("#MapContainer").message({ addMessage: { message: "offsetX:" + offsetX + "_offsetY:" + offsetY, timer: 5000, actionType: "immediately", type: "info"} });
+                    paning = false;
+                    //map.pan(-offsetX, offsetY, false, false);
+                   // $("#MapContainer").css("left",offsetX);
+                  //  $("#MapContainer").css("top", offsetY);
+
+                }
+
+
+            });
+            $("#MapContainer").bind('vmouseup', function (event) {
+                event.preventDefault();
+                movestart = false;
+            });
+
+            $("#MapContainer").bind('vmousedown', function (event) {
+
+            });
+            var scalestart = false;
+            var vmouseGeo = null;
+            var scaleExtent = null;
+            var vmousePoint = null;
+            var vmouseGeos = null;
+            var vmousePoints = null;
+            $("#MapContainer").bind('touchstart', function (event) {
+                // alert("touchstart");
+                //$.mobile.loadingMessage = "touchstart";
+                event = event.originalEvent;
+                var s = "";
+                for (var k in event) {
+
+                    s += k + ",";
+                    if (s > 100) {
+                        break;
+                    }
+                }
+                event.preventDefault();
+
+                //alert(s);
+                $.mobile.showPageLoadingMsg("b", event.touches.length, true);
+                svgLayer_point.removeAll();
+                vmouseGeos = new Array();
+                vmousePoints = new Array();
+                for (var i = 0; i < event.touches.length; i++) {
+                    var px = event.touches[i].pageX;
+                    var py = event.touches[i].pageY;
+                    var startX = $("#MapContainer").offset().left;
+                    var startY = $("#MapContainer").offset().top;
+                    var x = px - startX;
+                    var y = py - startY;
+                    x = Math.round(x);
+                    y = Math.round(y);
+                    vmousePoints[i] = new XiaoFu.Point(x, y);
+                    vmouseGeos[i] = map.pointToMap(vmousePoints[i]);
+                    var svg_Geo = new XiaoFu.SVG_Point(i, "touch" + i, vmouseGeos[i].x, vmouseGeos[i].y);
+                    svg_Geo.fill = "blue";
+                    svgLayer_point.addChild(svg_Geo);
+
+                    if (event.touches.length == 1) {
+                        if (!movestart && !scalestart) {
+                            movestart = true;
+                            holdCenter = map.getCenter();
+                            var px = event.pageX;
+                            var py = event.pageY;
+                            var startX = $("#MapContainer").offset().left;
+                            var startY = $("#MapContainer").offset().top;
+                            var x = px - startX;
+                            var y = py - startY;
+                            x = Math.round(x);
+                            y = Math.round(y);
+                            holdPoint = new XiaoFu.Point(x, y);
+                            holdPoint2 = new XiaoFu.Point(startX, startY);
+                            holdGeoPoint = map.pointToMap(holdPoint);
+                        }
+                    }
+                }
+            }
+            );
+            $("#MapContainer").bind('gesturestart', function (event) {
+                //$.mobile.showPageLoadingMsg("b", "gesturestart", true);
+                event.preventDefault();
+                var px = event.pageX;
+                var py = event.pageY;
+                var startX = $("#MapContainer").offset().left;
+                var startY = $("#MapContainer").offset().top;
+                var x = px - startX;
+                var y = py - startY;
+                x = Math.round(x);
+                y = Math.round(y);
+                event = event.originalEvent;
+                var scale = event.scale;
+                var s = "";
+                for (var k in event) {
+
+                    s += k + ",";
+                    if (s > 100) {
+                        break;
+                    }
+                }
+                //alert(event.rotation);
+                scalestart = true; movestart = false;
+            });
+            $("#MapContainer").bind('gesturechange', function (event) {
+                event.preventDefault();
+                if (scalestart) {
+                    event = event.originalEvent;
+                    var scale = event.scale;
+                    var s = "";
+                    for (var k in event) {
+
+                        s += k + ",";
+                        if (s > 100) {
+                            break;
+                        }
+                    }
+                    //alert(s);
+                    var extent = map.getCurrentExtent();
+                    var w = extent.width();
+                    var h = extent.height();
+                    //map.zoom(scale, false, null);
+                    //alert(event);
+                }
+
+            });
+            $("#MapContainer").bind('gestureend', function (event) {
+                event.preventDefault();
+                scalestart = false;
+                movestart = false;
+                event = event.originalEvent;
+                var scale = event.scale;
+                //alert(scale);
+                //map.zoom(scale, false, null);
+                var center = map.getCenter();
+                var vGx = 0;
+                var vGy = 0;
+                var touchP = new XiaoFu.GeoLine([vmouseGeos]);
+                vGx = touchP.getExtent().center().x;
+                vGy = touchP.getExtent().center().y;
+                scaleExtent = map.getCurrentExtent();
+                var left = scaleExtent.minX;
+                var right = scaleExtent.maxX;
+                var top = scaleExtent.maxY;
+                var bottom = scaleExtent.minY;
+                //alert(left + "_" + right + "_" + top + "_" + bottom);
+                var newLeft = vGx - (vGx - left) / scale;
+                var newRight = vGx - (vGx - right) / scale;
+                var newTop = vGy - (vGy - top) / scale;
+                var newBottom = vGy - (vGy - bottom) / scale;
+
+                var newExtent = new XiaoFu.Extent(newLeft, newBottom, newRight, newTop);
+                map.viewByExtent(newExtent);
+                //map.zoom(scale, vmouseGeo, center);
+                //map.zoomIn(1);
+            });
+
+        });
+        
+        window.onresize = function () {
+            var hh = $("#header").height();
+            var th = $(document).height();
+            var w = $(document).width();
+           // $("#content").html("w:" + w + "<br/>h:" + (th - hh));
+           
+
+        };
+    
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mapPage">
+        <div data-role="header" id="header">
+            <h1>
+                My Title</h1>
+        </div>
+        <!-- /header -->
+        <div data-role="content" id="content" style="padding:0px; margin:0px;">
+             <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative; padding:0px; margin:0px;
+        width:100%; height:100%;">
+    </div>   
+        </div>
+        <!-- /content -->
+    </div>
+    <!-- /page -->
+</body>
+</html>

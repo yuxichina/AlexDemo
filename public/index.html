@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+    <meta name="description" content="于汐的前端案例介绍" />
+    <meta name="author" content="Alex" />
+    <title>于汐的前端案例介绍</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="http://localhost:3001/remark/global/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://localhost:3001/remark/global/css/bootstrap-extend.min.css" />
+    <link rel="stylesheet" href="/styles/site.min.css" />
+    <!-- Plugins -->
+    <link href="https://cdn.bootcss.com/animsition/4.0.2/css/animsition.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://localhost:3001/remark/center/assets/examples/css/structure/timeline.css" />
+
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/r29/html5.min.js"></script>
+    <![endif]-->
+    <!--[if lt IE 10]>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
+</head>
+<body class="animsition site-menubar-hide" style="animation-duration: 2800ms; opacity: 1;">
+<!-- Page -->
+<div class="page" id="demo">
+    <div class="page-header page-header-bordered  ">
+        <h1 class="page-title">{{ title }}</h1>
+
+    </div>
+    <div class="page-content container">
+        <!-- Timeline -->
+        <ul class="timeline timeline-simple">
+
+            <timeline-item v-for="item in timeDatas" v-bind:timedata="item"></timeline-item>
+
+        </ul>
+        <!-- End Timeline -->
+    </div>
+</div>
+<script src="/javascripts/app.js"></script>
+
+</body>
+</html>

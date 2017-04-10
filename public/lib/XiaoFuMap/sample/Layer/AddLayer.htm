@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>添加图层</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, control, layer, glayer;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");           
+            glayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Satellite);
+            map.addLayer(glayer);            
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+        function AddLayer() {
+            layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Label);
+            layer.isBaseLayer = false;
+            layer.id = "labelLayer";
+            map.addLayer(layer);
+        }
+     
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div> 
+    <input type="button" value="添加标签图层" onclick="AddLayer()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

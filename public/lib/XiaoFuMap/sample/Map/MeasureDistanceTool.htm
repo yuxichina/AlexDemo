@@ -1,0 +1,39 @@
+﻿<!DOCTYPE >
+
+<html>
+<head>
+    <title>距离量算控件</title>
+   
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+     
+    <script type="text/javascript">
+
+        var map;
+        var control = null;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            control = new XiaoFu.ToolBar();
+            map.addControl(control);
+            tool = new XiaoFu.MeasureDistanceTool("../image/measure.png");
+            //tool.addEventListener("onclick", function () { alert("onclick"); });
+            control.addTool(tool);
+            tool.addEventListener("measureresult", function (eventType, evt) {
+                var result = evt.distance;
+                $("#msg").html("量算结果：" + result.result[0].value + result.result[0].unit.cc);
+
+            });
+        }
+      
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative; 
+        width: 1000px; height: 500px;">
+      
+    </div>  
+    <div id="msg">
+    </div>
+</body>
+</html>

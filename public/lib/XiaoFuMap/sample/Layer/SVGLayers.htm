@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+//            var layer = new XiaoFu.ArcGISCacheLayer("../../data.js");
+//            layer.serverUrl = "http://192.168.0.23/arcgiscache/World/Layers/_alllayers";
+//            layer.picFormat = "png";
+//            map.addLayer(layer);
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+        }
+
+        function moveRight() {
+            map.panRight(10000);
+        }
+        function moveLeft() {
+            map.panLeft(10000);
+        }
+        function moveTop() {
+            map.panTop(10000);
+        }
+        function moveBottom() {
+            map.panBottom(10000);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+        function zoomIn() {
+            map.zoomIn();
+        }
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        var svgLayer_point;
+        var point_beijing;
+        var point_shanghai;
+        var point_guangzhou;
+        var point_xianggang;
+        var point_haerbin;
+        var point_changchun;
+        var point_shenyang;
+        function addPoint() {
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_point);
+            point_beijing = new XiaoFu.SVG_Point(0, "beijing", 12797393.023617348, 4882185.870630785);
+            point_beijing.addEventListener("click", function (style, svg) {
+                var aaa = svg;
+                alert("wokao : point");
+            });
+            point_shanghai = new XiaoFu.SVG_Point(1, "shanghai", 12327763.921833225, 3903791.9085805295);
+            point_shanghai.fill = "yellow";
+            point_guangzhou = new XiaoFu.SVG_Point(2, "guangzhou", 10194865.084563665, 4764778.595184755);
+            point_guangzhou.fill = "yellow";
+            point_xianggang = new XiaoFu.SVG_Point(3, "xianggang", 11975542.095495133, 3042805.2219763035);
+            point_xianggang.fill = "orange";
+            point_haerbin = new XiaoFu.SVG_Point(4, "haerbin", 11975542.095495133, 3042805.2219763035);
+            point_haerbin.fill = "blue";
+            point_changchun = new XiaoFu.SVG_Point(5, "changchun", 13384429.4008475, 3610273.7199654523);
+            point_changchun.fill = "blue";
+            point_shenyang = new XiaoFu.SVG_Point(6, "shenyang", 13384429.4008475, 3610273.7199654523);
+            point_shenyang.fill = "blue";
+
+            svgLayer_point.addChild(point_beijing);
+            svgLayer_point.addChild(point_shanghai);
+            svgLayer_point.addChild(point_guangzhou);
+            svgLayer_point.addChild(point_xianggang);
+            svgLayer_point.addChild(point_haerbin);
+            svgLayer_point.addChild(point_changchun);
+            svgLayer_point.addChild(point_shenyang);
+
+            for (var i = 0; i < 99; i++) {
+                var point_shenyang1 = new XiaoFu.SVG_Point(7 + i, "shenyang" + 7 + i, 13384429.4008475 + i * 10, 3610273.7199654523 + i * 10); 
+                point_shenyang1.addEventListener("click", function (style, svg) {
+                    var aaa = svg;
+                    alert("wokao : point" + svg.id);
+                });
+                svgLayer_point.addChild(point_shenyang1);
+            }
+            document.getElementById("btn_addPoint").disabled = true;
+        }
+        var svgLayer_line;
+        var line_db;
+        var line;
+        function addLine() {
+            svgLayer_line = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer_line);
+
+            var myArray_db = new Array(3);
+            myArray_db[0] = new XiaoFu.GeoPoint(13717083.347944587, 6662862.881562252);
+            myArray_db[1] = new XiaoFu.GeoPoint(13834490.623390619, 5782308.315717021);
+            myArray_db[2] = new XiaoFu.GeoPoint(13443133.038570516, 5234407.696968878);
+            var myArray = new Array(4);
+            myArray[0] = new XiaoFu.GeoPoint(13423565.159329511, 5567061.644065965);
+            myArray[1] = new XiaoFu.GeoPoint(12640849.989689305, 4882185.870630785);
+            myArray[2] = new XiaoFu.GeoPoint(12777825.144376341, 4001631.3047855543);
+            myArray[3] = new XiaoFu.GeoPoint(13364861.521606496, 4373421.010364652);
+
+
+//            var m_geoLine = new XiaoFu.GeoLine();
+//            var m_geoArray = new Array();
+//            m_geoArray[0] = myArray_db;
+//            m_geoArray[1] = myArray;
+//            m_geoLine.path = m_geoArray;
+//            line_db = new XiaoFu.SVG_Line(0, "line0", m_geoLine);
+//            line_db.stroke = "yellow";
+//            line_db.addEventListener("click", function (style, svg) {
+//                var aaa = svg;
+//                alert("wokao : line");
+//            }, "line_db");
+//            line_db.strokeWidth = 10;
+//            svgLayer_line.addChild(line_db);
+
+
+            var m_geoLine_db = new XiaoFu.GeoLine();
+            var m_geoArray_db = new Array();
+            m_geoArray_db[0] = myArray_db;
+            m_geoLine_db.path = m_geoArray_db;
+            line_db = new XiaoFu.SVG_Line(0, "line0", m_geoLine_db);
+            line_db.stroke = "yellow";
+            line_db.addEventListener("click", function (style, svg) {
+                var aaa = svg;
+                alert("wokao : line");
+            }, "line_db");
+            line_db.strokeWidth = 10;
+            svgLayer_line.addChild(line_db);
+            var m_geoLine = new XiaoFu.GeoLine();
+            var m_geoArray = new Array();
+            m_geoArray[0] = myArray;
+            m_geoLine.path = m_geoArray;
+            line = new XiaoFu.SVG_Line(1, "line1", m_geoLine);
+            line.stroke = "red";
+            line.strokeWidth = 15;
+            svgLayer_line.addChild(line);
+            document.getElementById("btn_addLine").disabled = true;
+        }
+        var svgLayer_polygon;
+        var polygon;
+        var polygon1;
+        function addPolygon() {
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+
+            var myArray = new Array(3);
+            myArray[0] = new XiaoFu.GeoPoint(9725235.982779544, 4764778.595184755);
+            myArray[1] = new XiaoFu.GeoPoint(9862211.13746658, 3962495.546303544);
+            myArray[2] = new XiaoFu.GeoPoint(10801469.341034824, 4529964.044292693);
+            var myArray1 = new Array(4);
+            myArray1[0] = new XiaoFu.GeoPoint(11564616.631434025, 3766816.7538934937);
+            myArray1[1] = new XiaoFu.GeoPoint(12856096.661340363, 3825520.391616508);
+            myArray1[2] = new XiaoFu.GeoPoint(12777825.144376341, 2984101.584253289);
+            myArray1[3] = new XiaoFu.GeoPoint(11603752.389916034, 2944965.825771278);
+
+
+//            var m_geoPolygon = new XiaoFu.GeoPolygon();
+//            var m_geoArray = new Array();
+//            m_geoArray[0] = myArray;
+//            m_geoArray[1] = myArray1;
+//            m_geoPolygon.path = m_geoArray;
+//            polygon = new XiaoFu.SVG_Polygon(0, "polygon0", m_geoPolygon);
+//            polygon.addEventListener("click", function (style, svg) {
+//                var aaa = svg;
+//                alert("wokao : polygon");
+//            });
+//            svgLayer_polygon.addChild(polygon);
+
+            var m_geoPolygon = new XiaoFu.GeoPolygon();
+            var m_geoArray = new Array();
+            m_geoArray[0] = myArray;
+            m_geoPolygon.path = m_geoArray;
+            polygon = new XiaoFu.SVG_Polygon(0, "polygon0", m_geoPolygon);
+            polygon.addEventListener("click", function (style, svg) {
+                var aaa = svg;
+                alert("wokao : polygon");
+            });
+            svgLayer_polygon.addChild(polygon);
+
+            var m_geoPolygon1 = new XiaoFu.GeoPolygon();
+            var m_geoArray1 = new Array();
+            m_geoArray1[0] = myArray1;
+            m_geoPolygon1.path = m_geoArray1;
+            polygon1 = new XiaoFu.SVG_Polygon(1, "polygon1", m_geoPolygon1);
+            polygon1.addEventListener("click", function (style, svg) {
+                var aaa = svg;
+                alert("wokao : polygon111111");
+            });
+            svgLayer_polygon.addChild(polygon1);
+            document.getElementById("btn_addPolygon").disabled = true;
+        }
+
+        var all_visiable = false;
+        function setVisiable_point() {
+            svgLayer_point.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID_point() {
+            svgLayer_point.setChildVisiableByID(0, all_visiable);
+            svgLayer_point.setChildVisiableByID(2, all_visiable);
+            svgLayer_point.setChildVisiableByID(4, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild_point() {
+            point_beijing.r = 20;
+            point_shanghai.fill = "red";
+            point_haerbin.x = 111;
+            point_haerbin.y = 44;
+            svgLayer_point.updateChild(point_beijing);
+            svgLayer_point.updateChild(point_shanghai);
+            svgLayer_point.updateChild(point_haerbin);
+        }
+        function removeChildByID_point() {
+            svgLayer_point.removeChildByID(3);
+        }
+        function removeAll_point() {
+            svgLayer_point.removeAll();
+            document.getElementById("btn_addPoint").disabled = false;
+        }
+
+        function setVisiable_line() {
+            svgLayer_line.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID_line() {
+            svgLayer_line.setChildVisiableByID(0, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild_line() {
+            var myArray_db = new Array(4);
+            myArray_db[0] = new XiaoFu.GeoPoint(13717083.347944587, 6662862.881562252);
+            myArray_db[1] = new XiaoFu.GeoPoint(13834490.623390619, 5782308.315717021);
+            myArray_db[2] = new XiaoFu.GeoPoint(13443133.038570516, 5234407.696968878);
+            myArray_db[3] = new XiaoFu.GeoPoint(13423565.159329511, 5567061.644065965);
+
+            var m_geoLine_db = new XiaoFu.GeoLine();
+            var m_geoArray_db = new Array();
+            m_geoArray_db[0] = myArray_db;
+            m_geoLine_db.path = m_geoArray_db;
+            line_db.geometry = m_geoLine_db;
+            svgLayer_line.updateChild(line_db);
+        }
+        function removeChildByID_line() {
+            svgLayer_line.removeChildByID(0);
+        }
+        function removeAll_line() {
+            svgLayer_line.removeAll();
+            document.getElementById("btn_addLine").disabled = false;
+        }
+
+        function setVisiable_polygon() {
+            svgLayer_polygon.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID_polygon() {
+            svgLayer_polygon.setChildVisiableByID(0, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild_polygon() {
+            var myArray = new Array(4);
+            myArray[0] = new XiaoFu.GeoPoint(9725235.982779544, 4764778.595184755);
+            myArray[1] = new XiaoFu.GeoPoint(9862211.13746658, 3962495.546303544);
+            myArray[2] = new XiaoFu.GeoPoint(10801469.341034824, 4529964.044292693);
+            myArray[3] = new XiaoFu.GeoPoint(11564616.631434025, 3766816.7538934937);
+
+            var m_geoPolygon = new XiaoFu.GeoPolygon();
+            var m_geoArray = new Array();
+            m_geoArray[0] = myArray;
+            m_geoPolygon.path = m_geoArray;
+            polygon.geometry = m_geoPolygon;
+            svgLayer_polygon.updateChild(polygon);
+        }
+        function removeChildByID_polygon() {
+            svgLayer_polygon.removeChildByID(0);
+        }
+        function removeAll_polygon() {
+            svgLayer_polygon.removeAll();
+            document.getElementById("btn_addPolygon").disabled = false;
+        }
+
+        function text() {
+            //$("#svg_layer1_0_0").attr("points", "913.4999999999994,43.499999999999474,925.4999999999994,133.4999999999995,885.4999999999994,189.4999999999995");
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>
+    <input type="button" value="MoveRight" onclick="moveRight()" />
+    <input type="button" value="MoveLeft" onclick="moveLeft()" />
+    <input type="button" value="MoveTop" onclick="moveTop()" />
+    <input type="button" value="MoveBottom" onclick="moveBottom()" />
+    <input type="button" value="ZoomIn" onclick="zoomIn()" />
+    <input type="button" value="ZoomOut" onclick="zoomOut()" /><br />
+    <input id="btn_addPoint" type="button" value="AddPoint" onclick="addPoint()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable_point()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID_point()" />
+    <input type="button" value="UpdateChild" onclick="updateChild_point()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID_point()" />
+    <input type="button" value="RemoveAll" onclick="removeAll_point()" /><br />
+    <input id="btn_addLine" type="button" value="AddLine" onclick="addLine()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable_line()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID_line()" />
+    <input type="button" value="UpdateChild" onclick="updateChild_line()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID_line()" />
+    <input type="button" value="RemoveAll" onclick="removeAll_line()" /><br />
+    <input id="btn_addPolygon" type="button" value="AddPolygon" onclick="addPolygon()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable_polygon()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID_polygon()" />
+    <input type="button" value="UpdateChild" onclick="updateChild_polygon()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID_polygon()" />
+    <input type="button" value="RemoveAll" onclick="removeAll_polygon()" /><br />
+    <div id="msg">
+    </div>
+</body>
+</html>

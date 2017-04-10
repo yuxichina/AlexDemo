@@ -1,0 +1,11 @@
+{
+  "name": "AlexDemo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "open http://localhost:5000/ && node app.js "
+  },
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}

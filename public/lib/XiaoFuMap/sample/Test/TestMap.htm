@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../lib/Util/json2.js" type="text/javascript"></script>
+    <script src="../lib/Util/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../JQuery/JQueryUI/development-bundle/ui/jquery.ui.core.js" type="text/javascript"></script>
+    <script src="../../JQuery/JQueryUI/development-bundle/ui/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="../../JQuery/JQueryUI/development-bundle/ui/jquery.ui.mouse.js" type="text/javascript"></script>
+    <script src="../../JQuery/JQueryUI/development-bundle/ui/jquery.ui.draggable.js"
+        type="text/javascript"></script>
+    <script src="../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        //mm = XiaoFu.Class(XiaoFu.Map, { title:"dfdf"}) ;
+//        mm.prototype = {
+//            title:"dfdf"
+//        
+//        }
+        var map;
+        function load() {
+            var geoLine = [[[0, 1], [2, 1], [2, 2]], [[2, 11], [3, 23]]];
+            var gg = map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.ArcGISCacheLayer("../data.js");
+            //var d = { "serviceDescription": null, "mapName": "Layers", "description": "", "copyrightText": "", "layers": [{ "id": 0, "name": "GuanLang", "parentLayerId": -1, "defaultVisibility": false, "subLayerIds": null }, { "id": 1, "name": "吉化管廊2.jpg", "parentLayerId": -1, "defaultVisibility": false, "subLayerIds": null }, { "id": 2, "name": "index", "parentLayerId": -1, "defaultVisibility": true, "subLayerIds": [3, 4, 5, 6, 7, 8, 9, 10, 11] }, { "id": 3, "name": "changqu_jihua", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 4, "name": "Tjilin4", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 5, "name": "Tjilin3", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 6, "name": "Tjilin2", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 7, "name": "Tjilin1", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 8, "name": "Acjilin", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 9, "name": "Ajilin", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 10, "name": "Zjilin", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 11, "name": "Pjilin", "parentLayerId": 2, "defaultVisibility": true, "subLayerIds": null }, { "id": 12, "name": "road", "parentLayerId": -1, "defaultVisibility": true, "subLayerIds": [13, 14, 15, 16, 17, 18, 19, 20, 21] }, { "id": 13, "name": "SDE.Rjl_00_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 14, "name": "SDE.Rjl_01_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 15, "name": "SDE.Rjl_02_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 16, "name": "SDE.Rjl_03_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 17, "name": "SDE.Rjl_04_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 18, "name": "SDE.Rjl_06_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 19, "name": "SDE.Rjl_08_prj", "parentLayerId": 12, "defaultVisibility": false, "subLayerIds": null }, { "id": 20, "name": "SDE.Rjl_0a_prj", "parentLayerId": 12, "defaultVisibility": false, "subLayerIds": null }, { "id": 21, "name": "SDE.Polyline_prj", "parentLayerId": 12, "defaultVisibility": true, "subLayerIds": null }, { "id": 22, "name": "SDE.Polyline_prj", "parentLayerId": -1, "defaultVisibility": false, "subLayerIds": null }, { "id": 23, "name": "road0", "parentLayerId": -1, "defaultVisibility": true, "subLayerIds": [24, 25, 26, 27, 28, 29] }, { "id": 24, "name": "SDE.Rjl_00_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 25, "name": "SDE.Rjl_01_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 26, "name": "SDE.Rjl_02_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 27, "name": "SDE.Rjl_03_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 28, "name": "SDE.Rjl_04_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 29, "name": "SDE.Rjl_06_prj", "parentLayerId": 23, "defaultVisibility": true, "subLayerIds": null }, { "id": 30, "name": "back", "parentLayerId": -1, "defaultVisibility": true, "subLayerIds": [31, 32, 33, 34, 35, 36] }, { "id": 31, "name": "Bjilin_shuyu", "parentLayerId": 30, "defaultVisibility": false, "subLayerIds": null }, { "id": 32, "name": "Bjilin_shuyu", "parentLayerId": 30, "defaultVisibility": true, "subLayerIds": null }, { "id": 33, "name": "Bjili_lvdi", "parentLayerId": 30, "defaultVisibility": false, "subLayerIds": null }, { "id": 34, "name": "Bjili_lvdi", "parentLayerId": 30, "defaultVisibility": true, "subLayerIds": null }, { "id": 35, "name": "DLjilin", "parentLayerId": 30, "defaultVisibility": false, "subLayerIds": null }, { "id": 36, "name": "Djilin", "parentLayerId": 30, "defaultVisibility": true, "subLayerIds": null}], "tables": [], "spatialReference": { "wkid": 54004 }, "singleFusedMapCache": true, "tileInfo": { "rows": 256, "cols": 256, "dpi": 96, "format": "PNG24", "compressionQuality": 0, "origin": { "x": -20037700, "y": 30198300 }, "spatialReference": { "wkid": 54004 }, "lods": [{ "level": 0, "resolution": 1058.33545000423, "scale": 4000000 }, { "level": 1, "resolution": 529.167725002117, "scale": 2000000 }, { "level": 2, "resolution": 132.291931250529, "scale": 500000 }, { "level": 3, "resolution": 66.1459656252646, "scale": 250000 }, { "level": 4, "resolution": 33.0729828126323, "scale": 125000 }, { "level": 5, "resolution": 16.9333672000677, "scale": 64000}] }, "initialExtent": { "xmin": 14135944.1801947, "ymin": 5063012.20892997, "xmax": 14409259.3101583, "ymax": 5210914.58806925, "spatialReference": { "wkid": 54004} }, "fullExtent": { "xmin": 13323906.0201801, "ymin": 4900028.84154533, "xmax": 14828979.303069, "ymax": 5811144.18987888, "spatialReference": { "wkid": 54004} }, "units": "esriMeters", "supportedImageFormatTypes": "PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,AI,BMP", "documentInfo": { "Title": "jilin2", "Author": "Administrator", "Comments": "", "Subject": "", "Category": "", "Keywords": "", "Credits": "" }, "capabilities": "Map,Query,Data" };
+            //var layer = new XiaoFu.ArcGISCacheLayer(d);
+            layer.serverUrl = "http://localhost/Cache";
+            layer.picFormat = "png";
+            gg.addLayer(layer);
+            gg.viewboundschange = function () {
+                //alert("viewchange");
+
+            }
+      
+            //alert(gg.url);
+        }
+
+        function moveRight() {
+            map.panRight(10000);
+
+        }
+        function moveLeft() {
+//            for (var layer in map.layers) {
+//                map.layers[layer].offset(-44, 0);
+//            }
+            map.panLeft(10000);
+        }
+        function moveTop() {
+            map.panTop(10000);
+        }
+        function moveBottom() {
+            map.panBottom(10000);
+            
+        }
+        function showMsg(_msg) {
+            //_msg = $("#msg").html() + "<br/>"+_msg;
+            $("#msg").html(_msg);
+        }
+        function zoomIn() {
+            map.zoomIn();
+        }
+        function zoomOut() {
+            map.zoomOut();
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;  
+        width: 1000px; height: 500px;">
+    </div>
+    <input type="button" value="MoveRight" onclick="moveRight()" />
+    <input type="button" value="MoveLeft" onclick="moveLeft()" />
+    <input type="button" value="MoveTop" onclick="moveTop()" />
+    <input type="button" value="MoveBottom" onclick="moveBottom()" />
+    <input type="button" value="ZoomIn" onclick="zoomIn()" />
+    <input type="button" value="ZoomOut" onclick="zoomOut()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

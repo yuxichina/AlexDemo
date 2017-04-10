@@ -1,0 +1,126 @@
+﻿<!DOCTYPE />
+<html>
+<head>
+    <title>Action</title>
+   
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+     
+    <script type="text/javascript">
+
+        var map, svgLayer_point, svgLayer_line, svgLayer_polygon;
+        var control = null;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_point);
+            svgLayer_line = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer_line);
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function Pan() {
+            var panAction = new XiaoFu.PanAction();
+            map.setAction(panAction);
+        }
+        var pointCount = 0;
+        function DrawPoint() {
+            var drawPointAction = new XiaoFu.DrawPointAction();
+            drawPointAction.addEventListener("drawend", function (evtType, evt) {
+                var geo = evt.mouseGeoPoint;
+                pointCount++;
+                var point = new XiaoFu.SVG_Point(pointCount, "point" + pointCount, geo.x, geo.y);
+                svgLayer_point.addChild(point);
+            });
+            map.setAction(drawPointAction);
+        };
+        var lineCount = 0;
+        var tempLine = 0;
+        function DrawLine() {
+            var drawLineAction = new XiaoFu.DrawLineAction({showGeoInSvg:true});
+            drawLineAction.addEventListener("drawend", function (evtType, evt) {
+                svgLayer_line.removeChildByID(121212);
+                var geo = evt.geometry;
+                var k = geo.toJson();
+                lineCount++;
+                line_db = new XiaoFu.SVG_Line(lineCount, "line" + lineCount, geo);
+                line_db.stroke = "blue";
+                line_db.strokeWidth = "5";
+                //line_db.pointerEvents = "none";
+                svgLayer_line.addChild(line_db);
+            });
+            drawLineAction.addEventListener("drawprogress", function (evtType, evt) {
+                svgLayer_line.removeChildByID(121212);                
+                var geo = evt.geometry;               
+                line_db = new XiaoFu.SVG_Line(121212, "temp", geo);
+                line_db.stroke = "blue";
+                line_db.strokeWidth = "5";
+                svgLayer_line.addChild(line_db);
+            });
+            map.setAction(drawLineAction);
+
+        }
+
+        var polygonCount = 0;
+        var tempPolygon = 0;
+        function DrawPolygon() {
+            var drawPolygonAction = new XiaoFu.DrawPolygonAction();
+            drawPolygonAction.addEventListener("drawend", function (evtType, evt) {
+                svgLayer_polygon.removeChildByID(121212);
+                var geo = evt.geometry;
+                polygonCount++;
+                polygon1 = new XiaoFu.SVG_Polygon(polygonCount, "polygon" + polygonCount, geo);
+                svgLayer_polygon.addChild(polygon1);
+            });
+            drawPolygonAction.addEventListener("drawprogress", function (evtType, evt) {
+                svgLayer_polygon.removeChildByID(121212);
+
+                var geo = evt.geometry;
+                polygon1 = new XiaoFu.SVG_Polygon(121212, "temp", geo);
+                svgLayer_polygon.addChild(polygon1);
+            });
+            map.setAction(drawPolygonAction);
+        }
+
+
+        function DrawRect() {
+            var drawRectAction = new XiaoFu.DrawRectAction();
+            drawRectAction.addEventListener("drawend", function (evtType, evt) {
+                svgLayer_polygon.removeChildByID(121212);
+                var geo = evt.geometry;
+                polygonCount++;
+               
+                polygon1 = new XiaoFu.SVG_Polygon(polygonCount, "polygon" + polygonCount, geo);
+                svgLayer_polygon.addChild(polygon1);
+            });
+            drawRectAction.addEventListener("drawprogress", function (evtType, evt) {
+                svgLayer_polygon.removeChildByID(121212);
+
+                var geo = evt.geometry;
+               
+                polygon1 = new XiaoFu.SVG_Polygon(121212, "temp", geo);
+                svgLayer_polygon.addChild(polygon1);
+            });
+            map.setAction(drawRectAction);
+
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer"  style="z-index: 10000; border: 1px solid blue;   position: relative; 
+        width: 1000px; height: 500px;">
+      
+    </div> 
+    <input type="button" value="Pan" onclick="Pan()" />
+    <input type="button" value="DrawPoint" onclick="DrawPoint()" />
+    <input type="button" value="DrawLine" onclick="DrawLine()" />
+    <input type="button" value="DrawPolygon" onclick="DrawPolygon()" />
+    
+    <input type="button" value="DrawRect" onclick="DrawRect()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

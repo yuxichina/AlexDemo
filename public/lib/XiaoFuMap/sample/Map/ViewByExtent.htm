@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>根据范围显示地图</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, control;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);       
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }       
+        function showBJ() {
+            var ext = new XiaoFu.Extent(12888047.339163566, 4816755.774418673, 13040921.395733917, 4893192.802703848);
+            map.viewByExtent(ext);
+        };
+        function showSH() {
+            var ext = new XiaoFu.Extent(13486625.707664775,3640389.909109812,13563062.73594995,3678608.4232524);
+            map.viewByExtent(ext);
+        };
+
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>   
+    
+    <input type="button" value="北京" onclick="showBJ()" />
+    <input type="button" value="上海" onclick="showSH()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

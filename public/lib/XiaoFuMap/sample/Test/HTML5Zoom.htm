@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        var maskImages;
+        var layer;
+        function load() {
+            var gg = map = new XiaoFu.Map("#MapContainer");
+            var w = $(window).width() / 2;
+            var h = $(window).height();
+            layer = new XiaoFu.ArcGISCacheLayer("../../data.js");
+            layer.serverUrl = "http://localhost/Cache";
+            layer.picFormat = "png";
+            gg.addLayer(layer);
+            gg.zoomstart = function (geo,radio) {
+                maskZoom(radio, geo);
+            };
+            $("#MaskDiv").appendTo($("#layerContainer"));
+            
+        }
+        function maskZoom(radio, center) {
+            maskImages = layer.cacheImages;
+            var c = document.getElementById("MapMask");
+            var times = 5;
+            var w_s = 500 / times;
+            var h_s = 500 / times;
+            var res = map.getResolution();
+            var endLevel = parseInt(map.getResIndex(res)) + radio;
+            if (layer.levelInLods(endLevel)) {
+                var endRes = layer.lods[endLevel].resolution;
+                var loadExtent = layer.loadExtent;
+                if (!center) {
+                    center = map.getCenter();
+                }
+                var offsetRes = (endRes - res) / times;
+                var mapCenter = map.getCenter();
+                var offsetX = (center.x - mapCenter.x) / res;
+                var offsetY = (center.y - mapCenter.y) / res;
+                cavZoom(endRes, res, offsetRes, loadExtent, center, times, 500, 1000, offsetX, offsetY);
+            }
+        }
+        function cavZoom(endRes, nowRes, offsetRes, loadExtent, center, times, sumTime, hideTime, offsetX, offsetY) {
+            $("#MaskDiv").css("visibility", "visible");
+            layer.container.css("visibility", "hidden");           
+            var c = document.getElementById("MapMask");
+            c.width = 500;
+            c.height = 500;
+            var offsetX_G = offsetX * nowRes;
+            var offsetY_G = offsetY * nowRes;
+            var zoomCenter = new XiaoFu.GeoPoint(center.x - offsetX_G, center.y - offsetY_G);
+            var context = c.getContext("2d");
+            context.clearRect(0, 0, c.width, c.height);
+            $("#MaskOffset").css("top", 0 + "px");
+            $("#MaskOffset").css("left", 0 + "px");
+            if (offsetRes > 0 ? nowRes < endRes : nowRes > endRes) {               
+                context.clearRect(0, 0, c.width, c.height);
+                c.width = loadExtent.width() / nowRes;
+                c.height = loadExtent.height() / nowRes;
+                for (var i = 0; i < maskImages.length; i++) {
+                    var rows = maskImages[i];
+                    for (var j = 0; j < rows.length; j++) {
+                        var img = $(rows[j].img);
+                        var position = img.position();
+                        if (position) {
+                            var attr = getImgAttrByExtent(nowRes, new XiaoFu.Size(256, 256), loadExtent, rows[j].extent);
+                            var left = attr.left;
+                            var top = attr.top;
+                            var drawImg = new Image();
+                            drawImg.src = img.attr("src");
+                            drawImg.style.width = attr.width;
+                            drawImg.style.height = attr.height;
+                            var width = attr.width;
+                            var height = attr.height;
+                            context.drawImage(drawImg, left, top, width, height);
+                        }
+                    }
+                }
+                var loadCenter = loadExtent.center();
+                var newExtent = new XiaoFu.Extent(zoomCenter.x - map.viewSize.w * nowRes / 2, zoomCenter.y - map.viewSize.h * nowRes / 2, zoomCenter.x + map.viewSize.w * nowRes / 2, zoomCenter.y + map.viewSize.h * nowRes / 2);
+                var offsetLeft_G = loadExtent.minX - newExtent.minX;
+                var offsetTop_G = newExtent.maxY - loadExtent.maxY;
+                var offsetLeft = Math.floor(offsetLeft_G / nowRes);
+                var offsetTop = Math.floor(offsetTop_G / nowRes);
+                $("#MaskOffset").css("top", offsetTop + "px");
+                $("#MaskOffset").css("left", offsetLeft + "px");
+                setTimeout(function () { cavZoom(endRes, nowRes + offsetRes, offsetRes, loadExtent, center, times, sumTime, hideTime, offsetX, offsetY) }, sumTime/times);
+            }
+            else {
+                setTimeout(function () {
+                    layer.container.css("visibility", "visible");
+                    $("#MaskDiv").css("visibility", "hidden");
+                    
+                }, hideTime);
+            }
+        }
+
+        function getImgAttrByExtent(res, viewSize, loadExtent, tileExtent) {
+            var viewWidth = viewSize.w;
+            var viewHeight = viewSize.h;
+            var viewWidthG = viewWidth * res;
+            var viewHeightG = viewHeight * res;
+            var load_lt = new XiaoFu.GeoPoint(loadExtent.minX, loadExtent.maxY);
+            var tile_lt = new XiaoFu.GeoPoint(tileExtent.minX, tileExtent.maxY);
+            var offsetX = (tile_lt.x - load_lt.x) / res;
+            var offsetY = (load_lt.y - tile_lt.y) / res;
+            var width = Math.ceil(tileExtent.width() / res);
+            var height = Math.ceil(tileExtent.height() / res);
+            return { left: offsetX, top: offsetY, width: width, height: height };
+        }
+    </script>
+    <style type="text/css">
+        html, body, div
+        {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+<body onload="load()">
+    
+    <div id="MaskDiv" style="z-index: 10000; border: 0px solid blue; position: absolute;
+        width: 500px; height: 500px; left: 0px; top: 0px; overflow: hidden;">
+        <div id="MaskOffset" style="position: absolute; ">
+            <canvas id="MapMask" width="500" height="500">
+        
+            </canvas>
+        </div>
+    </div>
+    <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: absolute;
+        width: 500px; height: 500px; top: 0px;">
+    </div>
+    <div id="TT" style="position: absolute; top: 500px;">
+        <input type="button" value="zoom" onclick="maskZoom();" />
+    </div>
+</body>
+</html>

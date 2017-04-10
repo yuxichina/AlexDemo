@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>事件</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            map.addEventListener("zoomstart", function () { txt += "zoomstart "; showMsg(txt); });
+            map.addEventListener("zoomend", function () { txt += "zoomend "; showMsg(txt); });
+            map.addEventListener("panstart", function () { txt += "panstart "; showMsg(txt); });
+            map.addEventListener("panend", function () { txt += "panend "; showMsg(txt); });
+            map.addEventListener("loaded", function () { txt += "loaded "; showMsg(txt); });
+            map.addEventListener("init", function () { txt += "init "; showMsg(txt); });
+            map.addEventListener("viewboundschange", function () { txt += "viewboundschange "; showMsg(txt); });
+            //map.addEventListener("statuschange", function () { txt += map.status; showMsg(txt); });
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            layer.picFormat = "png";
+            layer.isBaseLayer = true;
+            map.addLayer(layer);
+            var control = new XiaoFu.Navigation();
+            map.addControl(control);
+           
+        }
+        var txt = "";
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+     
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div> 
+    <div id="msg">
+    </div>
+</body>
+</html>

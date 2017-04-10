@@ -1,0 +1,39 @@
+﻿<!DOCTYPE />
+<html>
+<head>
+    <title>Action</title>
+   
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+     
+    <script type="text/javascript">
+
+        var map, svgLayer_point, svgLayer_line, svgLayer_polygon;
+        var control = null;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_point);
+            svgLayer_line = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer_line);
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function Drag() {  map._setDraggable(true); }
+        function NoDrag() { map._setDraggable(false); }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer"  style="z-index: 10000; border: 1px solid blue;   position: relative; 
+        width: 1000px; height: 500px;">
+      
+    </div> 
+    <input type="button" value="Drag" onclick="Drag()" />
+    <input type="button" value="NoDrag" onclick="NoDrag()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

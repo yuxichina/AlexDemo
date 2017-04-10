@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html PUBLIC >
+
+<html >
+<head>
+    <title>BingMapLayer</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        var map, control, layer, glayer;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            map.addEventListener("mousemove", function (eventType, data) {
+                var center = map.getCenter();
+                var extent = map.getCurrentExtent();
+                var mouseGeo = data.mouseGeoPoint;
+                var mousePoint = data.mousePoint;
+                var txt = ""
+                + "<br/>地图中心 x-" + center.x + " y-" + center.y
+                + "<br/>地图当前范围 minX-" + extent.minX + "minY-" + extent.minY + "maxX-" + extent.maxX + "maxY-" + extent.maxY
+                + "<br/>鼠标点像素点 x-" + mousePoint.x + " y-" + mousePoint.y
+                + "<br/>鼠标地理点 x-" + mouseGeo.x + " y-" + mouseGeo.y
+                + "<br/>坐标系  " + map.getBaseLayer().spatialReference
+                + "<br/>当前分辨率  " + map.getResolution()
+                + "<br/>当前比例尺1:  " + (map.getResolution() * (72 / 0.0254))
++ "<br/>当前级别  " + map.getLevel()
+                ;
+                showMsg(txt);
+
+            });      
+            layer = new XiaoFu.BingCacheLayer("http://r{0}.tiles.ditu.live.com/tiles/r{1}.png?g=87");
+            map.addLayer(layer);  
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+        }
+        function showMap(index) {
+            if (index == 1) {
+                glayer.hide();
+                layer.show();
+            }
+            else {
+                glayer.show();
+                layer.hide();
+            }
+         };
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>     
+    <input type="button" value="影像地图" onclick="showMap(0);" />
+    <input type="button" value="矢量地图" onclick="showMap(1);" />
+    <div id="msg">
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>透明度设置</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, control, layer, glayer;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            layer.name = "Map";
+            glayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Satellite);
+            glayer.isBaseLayer = false;
+            glayer.name = "Globe";
+            layer.setOpacity(.5);
+            $("#opaTxt").html("5");
+            map.addLayer(glayer);
+            map.addLayer(layer);
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+
+            $("#opacitySet").slider({
+                
+                range: "min",
+                min: 0,
+                max: 1,
+                step: .1,
+                value: .5,
+                slide: function (event, ui) {
+                    var value = ui.value;
+                    $("#opaTxt").html(value * 10);
+                    layer.setOpacity(value);
+                }
+            });
+        }
+        
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>  
+    <div>矢量地图透明度设置 当前值： <label id="opaTxt"  ></label></div>
+    <div id="opacitySet" style="width:200px; margin:10px; "></div>
+    <div id="msg">
+    </div>
+</body>
+</html>

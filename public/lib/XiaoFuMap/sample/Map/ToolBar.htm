@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>导航控件</title>
+   
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+     
+    <script type="text/javascript">
+
+        var map;
+        var control = null;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            control = new XiaoFu.ToolBar();
+            map.addControl(control);
+            tool = new XiaoFu.Tool("../image/measure.png");
+            tool.addEventListener("onclick", function () { alert("onclick"); });
+            control.addTool(tool);
+        }
+       
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative; 
+        width: 1000px; height: 500px;">
+      
+    </div>  
+  
+    <div id="msg">
+    </div>
+</body>
+</html>

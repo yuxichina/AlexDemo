@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+        }
+
+        function addInfoWindow_default() {
+            var infoWindow = new XiaoFu.InfoWindow();
+            infoWindow.x = 12797393.023617348;
+            infoWindow.y = 4882185.870630785;
+            infoWindow.title = "default";
+            infoWindow.strHtml = "I'm a default Google info window with HTML content.";
+            map.addLayer(infoWindow);
+            infoWindow.show();
+        }
+        function addInfoWindow_funkyBox() {
+            var infoWindow_funkyBox = new XiaoFu.FunkyBoxInfoWindow();
+            infoWindow_funkyBox.x = 12797393.023617348;
+            infoWindow_funkyBox.y = 4882185.870630785;
+            infoWindow_funkyBox.title = "funkyBox";
+            infoWindow_funkyBox.strHtml = "I'm a funky ExtInfoWindow with HTML content.";
+            map.addLayer(infoWindow_funkyBox);
+            infoWindow_funkyBox.show();
+        }
+        function addInfoWindow_bubble() {
+            var infoWindow_bubble = new XiaoFu.BubbleInfoWindow();
+            infoWindow_bubble.x = 12797393.023617348;
+            infoWindow_bubble.y = 4882185.870630785;
+            infoWindow_bubble.title = "bubble";
+            infoWindow_bubble.strHtml = "I'm an ExtInfoWindow styled to look like a talking bubble.";
+            map.addLayer(infoWindow_bubble);
+            infoWindow_bubble.show();
+        }
+        function addInfoWindow_coolBlues() {
+            var infoWindow_coolBlues = new XiaoFu.CoolBluesInfoWindow();
+            infoWindow_coolBlues.x = 12797393.023617348;
+            infoWindow_coolBlues.y = 4882185.870630785;
+            infoWindow_coolBlues.title = "coolBlues";
+            infoWindow_coolBlues.strHtml = "With some clever use of gradients, widths, and the GIcon.infoWindowAnchor position, we can make a cool info window with a beak pointing to the Lat / Lon on the map";
+            map.addLayer(infoWindow_coolBlues);
+            infoWindow_coolBlues.show();
+        }
+        function addInfoWindow_opacity() {
+            var infoWindow_opacity = new XiaoFu.OpacityInfoWindow();
+            infoWindow_opacity.x = 12797393.023617348;
+            infoWindow_opacity.y = 4882185.870630785;
+            infoWindow_opacity.title = "opacity";
+            infoWindow_opacity.strHtml = "How about a terminal theme window? Sure, why not.";
+            infoWindow_opacity.strHtml += "<br><br>With the noCloseOnClick option set, it stays open when you click on the map."; 
+            map.addLayer(infoWindow_opacity);
+            infoWindow_opacity.show();
+        }
+        function addInfoWindow_red() {
+            var infoWindow_red = new XiaoFu.RedInfoWindow();
+            infoWindow_red.x = 12797393.023617348;
+            infoWindow_red.y = 4882185.870630785;
+            infoWindow_red.title = "infoWindow_red";
+            var myArray = new Array(3);
+            myArray[0] = "See how you can use background colors to match up with the CSS images to create title bars.";
+            myArray[1] = "Also, you can do anything you want within the bounds of CSS.";
+            myArray[2] = "Including the striped row look you see here.";
+            infoWindow_red.strArray = myArray;
+            map.addLayer(infoWindow_red);
+            infoWindow_red.show();
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px; overflow:inherit; ">
+    </div>
+    <div>
+    <input type="button" value="AddInfoWindow_default" onclick="addInfoWindow_default()" />
+    <input type="button" value="AddInfoWindow_funkyBox" onclick="addInfoWindow_funkyBox()" />
+    <input type="button" value="AddInfoWindow_bubble" onclick="addInfoWindow_bubble()" />
+    <input type="button" value="AddInfoWindow_coolBlues" onclick="addInfoWindow_coolBlues()" />
+    <input type="button" value="AddInfoWindow_opacity" onclick="addInfoWindow_opacity()" />
+    <input type="button" value="AddInfoWindow_red" onclick="addInfoWindow_red()" />
+    </div>
+</body>
+</html>

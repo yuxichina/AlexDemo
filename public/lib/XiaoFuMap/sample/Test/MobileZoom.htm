@@ -1,0 +1,307 @@
+﻿<!DOCTYPE html />
+<html >
+<head>
+    <title>导航控件</title>   
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    
+    <style>
+        body,html,div
+        {
+               padding:0px;
+               margin:0px;  
+            }
+            body,html
+            {
+                width:100%;
+                height:100%;
+                }
+    </style>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>     
+    <script type="text/javascript">
+        var map, svgLayer_point;
+        var control = null;
+        var zooming = false;
+        var scale = 0;
+        var panX = 0;
+        var panY = 0;
+        var paning = false;
+        var startCenter = null;
+        var h;
+        var w;
+        function load() {            
+            h = $("body").height() - parseFloat($("#MapContainer").css("border-top-width")) - parseFloat($("#MapContainer").css("border-bottom-width"));
+            w = $("body").width() - parseFloat($("#MapContainer").css("border-left-width")) - parseFloat($("#MapContainer").css("border-right-width")); ;
+            h = h - 40;
+            h = 400;
+            w = 1000;
+            $("#MapContainer").css("width", w).css("height", h);
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.NewGoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            map.addLayer(layer);
+            $("#layer0_Mask").css("width", w).css("height", h);
+            $("#layerContainer").css("width", "0px").css("height", "0px");
+            //map._setDraggable(false);
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            //map.addLayer(svgLayer_point);
+            $("#MapContainer").message();
+            $("#MapContainer").message({ addMessage: { message: "Test1", timer: 5000, actionType: "normal", type: "info"} });
+            
+            control = new XiaoFu.Navigation();
+            control.addEventListener("GetLocation", function (evtType, data) {
+                var destProj = new XiaoFu.Projection("EPSG:900913");
+                var sourceProj = new XiaoFu.Projection("WGS84");
+                var pointSource = new XiaoFu.GeoPoint(data.location.x, data.location.y);
+                var transform = new XiaoFu.Transform();
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+                var svg_Geo = new XiaoFu.SVG_Point(0, "location", pointDest[0].x, pointDest[0].y);
+                svg_Geo.fill = "blue";
+                svgLayer_point.addChild(svg_Geo);
+                map.panTo(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y));
+               
+            });
+            control.addEventListener("ClearLocation", function (evt) {
+                svgLayer_point.removeAll();
+            });
+            //map.addControl(control);
+
+
+            $("#layerContainer").css("-webkit-transition", "all 0s ease");
+            $("#layerContainer").bind('touchstart', function (evt) {
+                evt = evt.originalEvent;
+                evt.preventDefault();
+                if (evt.touches.length < 3) {
+                    paning = true;
+                    var touchPoints = new Array();
+                    for (var i = 0; i < evt.touches.length; i++) {
+                        var px = evt.touches[i].pageX;
+                        var py = evt.touches[i].pageY;
+                        touchPoints.push(new XiaoFu.Point(px, py));
+                    }
+                    var tempPoly = new XiaoFu.GeoPolygon([touchPoints]);
+                    var tempCenter = tempPoly.getExtent().center();
+                    //if (event.touches.length <3) {
+                    startCenter = new XiaoFu.Point(tempCenter.x, tempCenter.y);
+                    //dragControl.option.dragGeometry = map.pointToMap(dragControl.option.dragPoint);
+                    //}
+                }
+            });
+
+            $("#layerContainer").bind('touchmove', function (evt) {
+                evt = evt.originalEvent;
+                //$("#MapContainer").message({ addMessage: { message: "touchchange", timer: 5000, actionType: "normal", type: "info"} });
+                evt.preventDefault();
+                return;
+                if (paning && evt.touches.length < 3) {
+                    var touchPoints = new Array();
+                    for (var i = 0; i < event.touches.length; i++) {
+                        var px = evt.touches[i].pageX;
+                        var py = evt.touches[i].pageY;
+                        touchPoints.push(new XiaoFu.Point(px, py));
+                    }
+                    var tempPoly = new XiaoFu.GeoPolygon([touchPoints]);
+                    var tempCenter = tempPoly.getExtent().center();
+                    var offsetX = tempCenter.x - startCenter.x;
+                    var offsetY = tempCenter.y - startCenter.y;
+                    //dragControl.option.dragPoint = new xf.Point(tempCenter.x, tempCenter.y);
+                    //dragControl.option.dragGeometry = _map.pointToMap(dragControl.option.dragPoint);
+                    // var res = _map.getResolution();
+                    //_map.pan(offsetX * res, offsetY * res, true);
+
+                    $("#layerContainer").css("-webkit-transform", "translate(" + offsetX + "px," + offsetY + "px)");
+                }
+            });
+
+            $("#layerContainer").bind('touchend', function (evt) {
+                evt = evt.originalEvent;
+                evt.preventDefault();
+                zooming = false;
+                return;
+                $("#MapContainer").message({ addMessage: { message: "touchend", timer: 5000, actionType: "immediately", type: "info"} });
+                //return;
+                if (paning && evt.touches.length < 3) {
+                    paning = false;
+                    //$("#layerContainer").css("-webkit-transform", "translate(" + 0 + "px," + 0 + "px)");
+                    var touchPoints = new Array();
+
+                    for (var i = 0; i < evt.touches.length; i++) {
+                        var px = evt.touches[i].pageX;
+                        var py = evt.touches[i].pageY;
+                        touchPoints.push(new XiaoFu.Point(px, py));
+                    }
+                    //$("#MapContainer").message({ addMessage: { message: "There", timer: 5000, actionType: "immediately", type: "info"} });
+
+                    var tempPoly = new XiaoFu.GeoPolygon([touchPoints]);
+                    $("#MapContainer").message({ addMessage: { message: "There", timer: 5000, actionType: "immediately", type: "info"} });
+
+                    var tempCenter = tempPoly.getExtent().center();
+                    var offsetX = tempCenter.x - startCenter.x;
+                    var offsetY = tempCenter.y - startCenter.y;
+                    //dragControl.option.dragPoint = new xf.Point(tempCenter.x, tempCenter.y);
+                    //dragControl.option.dragGeometry = _map.pointToMap(dragControl.option.dragPoint);
+
+                    var res = map.getResolution();
+                    map.pan(offsetX * res, offsetY * res, true);
+
+                    $("#MapContainer").message({ addMessage: { message: offsetX, timer: 5000, actionType: "immediately", type: "info"} });
+
+                }
+            });
+
+            $("#layerContainer").bind('gesturestart', function (evt) {
+                evt = evt.originalEvent;
+                var p = startCenter;
+                
+                //$("#layerContainer").css("-webkit-transform", "scale(" + 1 + "," + 1 + ")");
+                zooming = true;
+            });
+
+            $("#layerContainer").bind('gesturechange', function (evt) {
+
+                evt = evt.originalEvent;
+                var scale = event.scale;
+                if (zooming) {
+                    try {
+                        $("#MapContainer").message({ addMessage: { message: "scale:" + scale, timer: 5000, actionType: "normal", type: "info"} });
+                        var xx = startCenter.x;
+                        var yy = startCenter.y;
+                        var maskX = 50;
+                        var maskY = 50;
+                        var offsetX = xx - maskX / 2;
+                        var offsetY = yy - maskY / 2;
+                        $("#layerContainer .Mask").css("left", -offsetX).css("top", -offsetY);
+                        $("#layerContainer").width(maskX).height(maskY).css("left", offsetX).css("top", offsetY);
+                        x = 0;
+                        y = 0;
+                        radio = scale;
+                        doIt();
+                        //x = startCenter.x;
+                        //y = startCenter.y;
+                        //radio = scale;
+                        //x = (w / 2 - startCenter.x) / radio;
+                        //y = (h / 2 - startCenter.y) / radio;
+                        //doIt();
+                        // $("#layerContainer").css("-webkit-transform", "scale(" + scale + "," + scale + ") translate(" + ((scale - 1) * offsetX) + "px, " + ((scale - 1) * offsetY) + "px)");
+                        //$("#layerContainer").css("-webkit-transform", "scale(" + scale + "," + scale + ")");
+                    }
+                    catch (e) {
+                        // $("#MapContainer").message({ addMessage: { message: e.ToString(), timer: 5000, actionType: "normal", type: "info"} });
+
+                    }
+                }
+            });
+
+            $("#layerContainer").bind('gestureend', function (evt) {
+                evt = evt.originalEvent;
+                zooming = false;
+                //alert(evt.scale);
+                $("#layerContainer").css("-webkit-transform", "scale(" + 1 + "," + 1 + ")");
+                $("#layerContainer .Mask").css("left", 0).css("top", 0);
+                $("#layerContainer").width(0).height(0).css("left", 0).css("top", 0);
+                var s = evt.scale;
+                if (s < 1) {
+                    s = Math.log(s);
+                    //alert(s);
+                }
+                map.zoom(s, map.pointToMap(startCenter), map.getCenter());
+            });
+
+
+
+
+        }
+
+        function test1F() {
+            var xx = 50;
+            var yx = 50;
+            var maskX = 50;
+            var maskY = 50;
+            var offsetX = xx - maskX / 2;
+            var offsetY = yx - maskY / 2;
+            $("#layerContainer .Mask").css("left", -offsetX).css("top", -offsetY);          
+            $("#layerContainer").width(maskX).height(maskY).css("left", offsetX).css("top",offsetY);
+            x = 0;
+            y = 0;
+            radio = 2;
+            doIt();
+            setTimeout(function () {
+                $("#layerContainer").css("-webkit-transform", "scale(" + 1 + "," + 1 + ")");
+                $("#layerContainer .Mask").css("left", 0).css("top", 0);
+                $("#layerContainer").width(0).height(0).css("left", 0).css("top", 0); map.zoom(radio, map.pointToMap(new XiaoFu.GeoPoint(xx, yx)), map.getCenter());
+            }, 1000);
+            //radio = 4;
+            //x = w / (2*radio);
+            //y = h / (2*radio);
+            //x = (w / 2 ) / radio;
+            //y = (h / 2)/ radio;
+            //x = w * (radio - 1) / 2;
+            //y = h * (radio - 1) / 2;
+            //doIt();
+            //zoomF(2);
+            //translateF(20, 0);
+        }
+        function test2F() {
+            x = 20;
+            y = 20;
+            radio = 2;
+            doIt();
+
+            //translateF(20, 0);
+            //zoomF(2);
+        }
+
+        var radio = 1;
+        var x = 0;
+        var y = 0;
+        function zoomF(_radio) {
+            x = 0;
+            y = 0;
+            radio = _radio;
+            doIt();
+           
+        }
+        function translateF(_x,_y) {
+//            x += w/2;
+            //            y -= h/2;
+            x += 20;
+            //radio = 1;
+            doIt();
+          //  $("#layerContainer").css("-webkit-transform", "translate(" + x + "px," + y + "px)");
+        }
+
+        function doIt() {
+            $("#layerContainer").css("-webkit-transform", "scale(" + radio + "," + radio + ")" + " translate(" + x + "px," + y + "px)");
+        }
+
+        function z(_radio) {
+            //x = (w / 2) * (1 - 1 / _radio) * (w / 2 - 0);
+            //y = (h / 2) * (1 - 1 / _radio) * (h / 2 - 0);
+            var ww = w / 2;
+            var hh = h / 2;
+            var xx = w / 2;
+            var yy = 0;
+            x = ww*(1 - 1 / _radio);
+            y = hh*(1 - 1 / _radio);
+            //y = 0;
+            radio = _radio;
+            doIt();
+        }
+    </script>
+</head>
+<body onload="load()">
+   
+       <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative; padding:0px; margin:0px;
+        width:100%; height:100%;">
+       
+    </div>   
+  
+   <div>
+            <input type="button" id="test1" value="test1" onclick="test1F()" />
+             <input type="button" id="test2" value="test2" onclick="test2F()" />
+              <input type="button" id="zoom" value="zoom" onclick="zoomF(2)" />
+                <input type="button" id="translate" value="translate" onclick="translateF(20,20)" />
+                <input type="button" id="z2" value="z2" onclick="z(2)" />
+                <input type="button" id="z3" value="z3" onclick="z(3)" />
+                <input type="button" id="z4" value="z4" onclick="z(4)" />
+        </div>
+</body>
+</html>

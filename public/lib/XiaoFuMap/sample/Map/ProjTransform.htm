@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>坐标转换</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, control;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+            var transform = new XiaoFu.Transform();
+            map.addEventListener("mousemove", function (eventType, data) {                
+                var center = map.getCenter();
+                var extent = map.getCurrentExtent();
+                var mouseGeo = data.mouseGeoPoint;
+                var mousePoint = data.mousePoint;
+                var sourceProj = new XiaoFu.Projection("EPSG:900913");
+                var destProj = new XiaoFu.Projection("WGS84");
+                var pointSource = mouseGeo;
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+
+                var txt = ""
+                + "<br/>地图中心 x-" + center.x + " y-" + center.y
+                + "<br/>地图当前范围 minX-" + extent.minX + "minY-" + extent.minY + "maxX-" + extent.maxX + "maxY-" + extent.maxY
+                + "<br/>鼠标点像素点 x-" + mousePoint.x + " y-" + mousePoint.y
+                + "<br/>鼠标地理点EPSG:900913 x-" + mouseGeo.x + " y-" + mouseGeo.y                
+                + "<br/>鼠标地理点WGS84 x-" + pointDest[0].x + " y-" + pointDest[0].y;
+                showMsg(txt);
+
+            });
+                
+            
+            control = new XiaoFu.Navigation();
+            map.addControl(control); 
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }        
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>  
+    <div id="msg">
+    </div>
+</body>
+</html>

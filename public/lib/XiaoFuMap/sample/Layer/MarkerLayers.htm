@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+//            var layer = new XiaoFu.ArcGISCacheLayer("../../data.js");
+//            layer.serverUrl = "http://192.168.0.23/arcgiscache/World/Layers/_alllayers";
+//            layer.picFormat = "png";
+            //            map.addLayer(layer);
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+        }
+
+        function moveRight() {
+            map.panRight(10000);
+        }
+        function moveLeft() {
+            map.panLeft(10000);
+        }
+        function moveTop() {
+            map.panTop(10000);
+        }
+        function moveBottom() {
+            map.panBottom(10000);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+        function zoomIn() {
+            map.zoomIn();
+        }
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        var markerLayer;
+        var marker_beijing;
+        var marker_shanghai;
+        var marker_guangzhou;
+        var marker_xianggang;
+        var marker_haerbin;
+        var marker_changchun;
+        var marker_shenyang;
+        var marker_shenyang1;
+        function addMarker() {
+            markerLayer = new XiaoFu.MarkerLayers("marker");
+            //markerLayer.isPolymerization = false;
+            map.addLayer(markerLayer);
+            marker_beijing = new XiaoFu.Marker(0, "beijing", 12797393.023617348, 4882185.870630785);
+            marker_beijing.w = 15;
+            marker_beijing.h = 15;
+            marker_beijing.addEventListener("click", function (style, svg) {
+                var aaa = svg;
+                alert("wokao : marker");
+            });
+            marker_beijing.addEventListener("onMouseOver", function (style, p_obj) {
+                var m_t = parseInt(p_obj.style.top.replace("px", ""));
+                var m_l = parseInt(p_obj.style.left.replace("px", ""));
+                var m_w = parseInt(p_obj.style.width.replace("px", ""));
+                var m_h = parseInt(p_obj.style.height.replace("px", ""));
+                $(p_obj).css("top", m_t - 5);
+                $(p_obj).css("left", m_l - 5);
+                $(p_obj).css("width", m_w + 5);
+                $(p_obj).css("height", m_h + 5);
+                $(p_obj).css("zIndex", 10000);
+            });
+            marker_beijing.addEventListener("onMouseOut", function (style, p_obj) {
+                var m_t = parseInt(p_obj.style.top.replace("px", ""));
+                var m_l = parseInt(p_obj.style.left.replace("px", ""));
+                var m_w = parseInt(p_obj.style.width.replace("px", ""));
+                var m_h = parseInt(p_obj.style.height.replace("px", ""));
+                $(p_obj).css("top", m_t + 5);
+                $(p_obj).css("left", m_l + 5);
+                $(p_obj).css("width", m_w - 5);
+                $(p_obj).css("height", m_h - 5);
+                $(p_obj).css("zIndex", "");
+            });
+            marker_shanghai = new XiaoFu.Marker(1, "shanghai", 12327763.921833225, 3903791.9085805295);
+            marker_shanghai.url = "../image/yellow.png";
+            marker_guangzhou = new XiaoFu.Marker(2, "guangzhou", 10194865.084563665, 4764778.595184755);
+            marker_guangzhou.url = "../image/yellow.png";
+            marker_xianggang = new XiaoFu.Marker(3, "xianggang", 11975542.095495133, 3042805.2219763035);
+            marker_xianggang.url = "../image/orange.png";
+            marker_haerbin = new XiaoFu.Marker(4, "haerbin", 11975542.095495133, 3042805.2219763035);
+            marker_haerbin.url = "../image/blue.png";
+            marker_changchun = new XiaoFu.Marker(5, "changchun", 13384429.4008475, 3610273.7199654523);
+            marker_changchun.url = "../image/blue.png";
+            marker_shenyang = new XiaoFu.Marker(6, "shenyang", 13384429.4008475, 3610273.7199654523);
+            marker_shenyang.url = "../image/blue.png";
+
+            markerLayer.addChild(marker_beijing);
+            markerLayer.addChild(marker_shanghai);
+            markerLayer.addChild(marker_guangzhou);
+            markerLayer.addChild(marker_xianggang);
+            markerLayer.addChild(marker_haerbin);
+            markerLayer.addChild(marker_changchun);
+            markerLayer.addChild(marker_shenyang);
+
+//            for (var i = 0; i < 8; i++) {
+//                marker_shenyang1 = new XiaoFu.Marker(7 + i, "shenyang" + 7 + i, 13384429.4008475 + i * 10, 3610273.7199654523 + i * 10);
+//                marker_shenyang1.url = "../image/blue.png";
+//                marker_shenyang1.addEventListener("click", function (style, svg) {
+//                    var aaa = svg;
+//                    alert("wokao : point" + svg.id);
+//                });
+//                markerLayer.addChild(marker_shenyang1);
+//            }
+            document.getElementById("btn_addMarker").disabled = true;
+        }
+        var all_visiable = false;
+        function setVisiable() {
+            markerLayer.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID() {
+            markerLayer.setChildVisiableByID(0, all_visiable);
+            markerLayer.setChildVisiableByID(2, all_visiable);
+            markerLayer.setChildVisiableByID(4, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild() {
+            marker_beijing.w = 30;
+            marker_beijing.h = 30;
+            marker_shanghai.url = "../image/red.png";
+            marker_shenyang.x = 13384329.4008475;
+            marker_shenyang.y = 3610173.7199654523;
+            markerLayer.updateChild(marker_beijing);
+            markerLayer.updateChild(marker_shanghai);
+            markerLayer.updateChild(marker_shenyang);
+        }
+        function removeChildByID() {
+            markerLayer.removeChildByID(4);
+        }
+        function removeAll() {
+            map.removeLayer(markerLayer.id);
+            //markerLayer.destory();
+            document.getElementById("btn_addMarker").disabled = false;
+        }
+
+        var markerLayer_str;
+        var m_markerString;
+        var m_markerString1;
+        function addMarker_String() {
+            markerLayer_str = new XiaoFu.MarkerLayers("string");
+            map.addLayer(markerLayer_str);
+            var str = "<div><input type='button' value='000000'/></div>";
+            var str1 = "<div><input type='button' value='111111'/><input type='button' value='222222'/></div>";
+            m_markerString = new XiaoFu.Marker_String(0, str, 12797393.023617348, 4882185.870630785);
+            m_markerString1 = new XiaoFu.Marker_String(1, str1, 10194865.084563665, 4764778.595184755);
+            markerLayer_str.addChild(m_markerString);
+            markerLayer_str.addChild(m_markerString1);
+            document.getElementById("btn_addMarkerString").disabled = true;
+        }
+        function setVisiable_String() {
+            markerLayer_str.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID_String() {
+            markerLayer_str.setChildVisiableByID(0, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild_String() {
+            m_markerString.str = "<div><input type='button' value='333333'/></div>";
+            markerLayer_str.updateChild(m_markerString);
+        }
+        function removeChildByID_String() {
+            markerLayer_str.removeChildByID(1);
+        }
+        function removeAll_String() {
+            markerLayer_str.removeAll();
+            document.getElementById("btn_addMarkerString").disabled = false;
+        }
+
+        var markerLayer_JQY;
+        var m_markerJQY;
+        var m_markerJQY1;
+        function addMarker_JQY() {
+            markerLayer_JQY = new XiaoFu.MarkerLayers("jQuery");
+            map.addLayer(markerLayer_JQY);
+            var JQY = $("<img/>")
+                    .attr("src", "../image/red.png")
+                    .css("width", 10)
+                    .css("height", 10)
+                    .css("top", 10)
+                    .css("left", 10)
+                    .css("position", "absolute")
+                    .css("cursor", "pointer")
+                    .css("border", "0px solid white");
+            var JQY1 = $("<img/>")
+                    .attr("src", "../image/blue.png")
+                    .css("width", 20)
+                    .css("height", 20)
+                    .css("top", 50)
+                    .css("left", 50)
+                    .css("position", "absolute")
+                    .css("cursor", "pointer")
+                    .css("border", "0px solid white");
+            m_markerJQY = new XiaoFu.Marker_jQuery(0, JQY, 12797393.023617348, 4882185.870630785);
+            m_markerJQY1 = new XiaoFu.Marker_jQuery(1, JQY1, 10194865.084563665, 4764778.595184755);
+            markerLayer_JQY.addChild(m_markerJQY);
+            markerLayer_JQY.addChild(m_markerJQY1);
+            document.getElementById("btn_addMarkerJQY").disabled = true;
+        }
+        function setVisiable_JQY() {
+            markerLayer_JQY.setVisiable(all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function setChildVisiableByID_JQY() {
+            markerLayer_JQY.setChildVisiableByID(0, all_visiable);
+            all_visiable = !all_visiable;
+        }
+        function updateChild_JQY() {
+            m_markerJQY.jQuery = $("<img/>")
+                    .attr("src", "../image/yellow.png")
+                    .css("width", 15)
+                    .css("height", 15)
+                    .css("top", 20)
+                    .css("left", 20)
+                    .css("position", "absolute")
+                    .css("cursor", "pointer")
+                    .css("border", "0px solid white");
+            markerLayer_JQY.updateChild(m_markerJQY);
+        }
+        function removeChildByID_JQY() {
+            markerLayer_JQY.removeChildByID(1);
+        }
+        function removeAll_JQY() {
+            markerLayer_JQY.removeAll();
+            document.getElementById("btn_addMarkerJQY").disabled = false;
+        }
+
+        function text() {
+            var m_img = $("<img/>")
+                    .attr("id", "marker_123132132")
+                    .attr("src", "../image/red.png")
+                    .css("width", 10)
+                    .css("height", 10)
+                    .css("position", "absolute")
+                    .css("cursor", "pointer")
+                    .css("border", "0px solid white")
+            aaa(m_img);
+        }
+        function aaa(p_obj) {
+            p_obj.attr("id", "123132132");
+            p_obj.appendTo($("#msg"));
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>
+    <input type="button" value="MoveRight" onclick="moveRight()" />
+    <input type="button" value="MoveLeft" onclick="moveLeft()" />
+    <input type="button" value="MoveTop" onclick="moveTop()" />
+    <input type="button" value="MoveBottom" onclick="moveBottom()" />
+    <input type="button" value="ZoomIn" onclick="zoomIn()" />
+    <input type="button" value="ZoomOut" onclick="zoomOut()" /><br />
+    <input id="btn_addMarker" type="button" value="AddMarker" onclick="addMarker()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID()" />
+    <input type="button" value="UpdateChild" onclick="updateChild()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID()" />
+    <input type="button" value="RemoveAll" onclick="removeAll()" /><br />
+    <input id="btn_addMarkerString" type="button" value="AddMarkerDiv" onclick="addMarker_String()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable_String()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID_String()" />
+    <input type="button" value="UpdateChild" onclick="updateChild_String()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID_String()" />
+    <input type="button" value="RemoveAll" onclick="removeAll_String()" /><br />
+    <input id="btn_addMarkerJQY" type="button" value="AddMarkerJQY" onclick="addMarker_JQY()" />
+    <input type="button" value="SetVisiable" onclick="setVisiable_JQY()" />
+    <input type="button" value="SetChildVisiableByID" onclick="setChildVisiableByID_JQY()" />
+    <input type="button" value="UpdateChild" onclick="updateChild_JQY()" />
+    <input type="button" value="RemoveChildByID" onclick="removeChildByID_JQY()" />
+    <input type="button" value="RemoveAll" onclick="removeAll_JQY()" /><br />
+    <input type="button" value="text" onclick="text()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

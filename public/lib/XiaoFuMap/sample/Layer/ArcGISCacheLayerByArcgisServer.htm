@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            $.ajax({
+                url: "http://192.168.0.23/ArcGIS/rest/services/SeverTest/jilin_0041/MapServer?f=json",
+                dataType: "jsonp",
+                success: function (data) {
+                    var gg = map = new XiaoFu.Map("#MapContainer");
+                    var layer = new XiaoFu.ArcGISCacheLayer(data);
+                    layer.serverUrl = "http://192.168.0.23/arcgiscache/SeverTest_jilin_0041/Layers/_alllayers";
+                    layer.picFormat = "png";
+                    gg.addLayer(layer);
+                    gg.panend = function (geo) {
+                        var center = map.getCenter();
+                        showMsg(center.x + "_" + center.y);
+                    }
+                }
+            });
+        }
+
+        function zoomIn() {
+            map.zoomIn();
+        }
+        function zoomOut() {
+            map.zoomOut();
+        } function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>
+    <input type="button" value="ZoomIn" onclick="zoomIn()" />
+    <input type="button" value="ZoomOut" onclick="zoomOut()" />
+    <div id="msg">
+    </div>
+    <div id="info">
+    </div>
+</body>
+</html>

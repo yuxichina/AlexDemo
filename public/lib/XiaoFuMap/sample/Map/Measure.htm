@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>距离量算</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map, svgLayer, pointA, pointB, tempDis, control;
+        function load() {
+            pointA = new XiaoFu.GeoPoint(116.398, 39.919);
+            pointB = new XiaoFu.GeoPoint(121.48, 31.23);
+            var initExtent = new XiaoFu.Extent(7142275.922966868, 2338361.569300118, 16926215.54346943, 7230331.379551399);
+            map = new XiaoFu.Map("#MapContainer", initExtent);
+            map.addEventListener("init", function () {
+                var measure = new XiaoFu.Measure();
+                var distance = measure.getDistance([pointA, pointB], "WGS84");
+                if (distance) {
+                    var txt = "距离：";
+                    for (var i in distance.result) {
+                        var u = distance.result[i];
+                        txt += "<br/>";
+                        txt += u.value;
+                        txt += u.unit.cc;
+                    }
+                    showMsg(txt);
+                }
+            });
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            layer.picFormat = "png";
+            layer.isBaseLayer = true;
+            map.addLayer(layer);
+            svgLayer = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer);
+           
+            var sourceProj = new XiaoFu.Projection("WGS84");
+            var destProj = new XiaoFu.Projection("EPSG:900913");
+            var transform = new XiaoFu.Transform();
+            var pointDest = transform.transform(sourceProj, destProj, [pointA, pointB]);
+
+            var line = new XiaoFu.GeoLine([pointDest], map.getSpatialReference());
+            //line.path = pointDest;
+            var line_db = new XiaoFu.SVG_Line(0, "line0", line);
+            line_db.stroke = "yellow";
+            line_db.strokeWidth = 5;
+            svgLayer.addChild(line_db);
+
+            control = new XiaoFu.Navigation();
+            map.addControl(control);
+
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+     
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>  
+    <div id="msg">
+    </div>
+</body>
+</html>

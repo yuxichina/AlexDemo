@@ -1,0 +1,220 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sidetap HTML Skeleton</title>
+
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-app-status-bar-style" content="white" />    
+   
+      <link href="../Frame/harvesthq-Sidetap-ddc2e33/src/sidetap.css" rel="stylesheet"
+          type="text/css" />
+      <link href="../Frame/harvesthq-Sidetap-ddc2e33/src/theme/default/default.css" rel="stylesheet"
+          type="text/css" />
+           <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    
+          <script type="text/javascript">
+        var map, svgLayer_polygon, markerLayer, polygon, geoData;
+        var control = null;
+        window.onresize = function () {
+            var position = $("#MapContainer").position();
+            var h = $("body").height()
+             - parseFloat(position.top)
+            - parseFloat($("#MapContainer").css("margin-bottom"))
+            - parseFloat($("#MapContainer").css("margin-top"))
+            - parseFloat($("#MapContainer").css("padding-top"))
+            - parseFloat($("#MapContainer").css("padding-bottom"))
+            - parseFloat($("#MapContainer").css("border-top-width"))
+            - parseFloat($("#MapContainer").css("border-bottom-width"));
+            var w = $("body").width()
+             - parseFloat(position.left)
+            - parseFloat($("#MapContainer").css("margin-right"))
+            - parseFloat($("#MapContainer").css("margin-left"))
+            - parseFloat($("#MapContainer").css("padding-left"))
+            - parseFloat($("#MapContainer").css("padding-left"))
+            - parseFloat($("#MapContainer").css("border-left-width"))
+            - parseFloat($("#MapContainer").css("border-right-width")); 
+            if (map) {
+                map.resize(new XiaoFu.Size(w, h), 0);
+            }
+            else {
+                $("#MapContainer").css("width", w).css("height", h);
+            }
+            //alert(h);
+
+        }
+        $(document).ready(function () {
+
+            var position = $("#MapContainer").position();
+            var h = $("body").height()
+             - parseFloat(position.top)
+            - parseFloat($("#MapContainer").css("margin-bottom"))
+            - parseFloat($("#MapContainer").css("margin-top"))
+            - parseFloat($("#MapContainer").css("padding-top"))
+            - parseFloat($("#MapContainer").css("padding-bottom"))
+            - parseFloat($("#MapContainer").css("border-top-width")) 
+            - parseFloat($("#MapContainer").css("border-bottom-width"));
+            var w = $("body").width()
+             - parseFloat(position.left)
+            - parseFloat($("#MapContainer").css("margin-right"))
+            - parseFloat($("#MapContainer").css("margin-left"))
+            - parseFloat($("#MapContainer").css("padding-left"))
+            - parseFloat($("#MapContainer").css("padding-left"))
+            - parseFloat($("#MapContainer").css("border-left-width")) 
+            - parseFloat($("#MapContainer").css("border-right-width")); 
+            $("#MapContainer").css("width", w).css("height", h);
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+
+            markerLayer = new XiaoFu.MarkerLayers("marker");
+            //markerLayer.isPolymerization = false;
+            map.addLayer(markerLayer);
+
+            $("#MapContainer").message();
+            control = new XiaoFu.Navigation();
+            control.addEventListener("GetLocation", function (evtType, data) {
+                var destProj = new XiaoFu.Projection("EPSG:900913");
+                var sourceProj = new XiaoFu.Projection("WGS84");
+                var pointSource = new XiaoFu.GeoPoint(data.location.x, data.location.y);
+                var transform = new XiaoFu.Transform();
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+                var svg_Geo = new XiaoFu.SVG_Point(0, "location", pointDest[0].x, pointDest[0].y);
+                svg_Geo.fill = "blue";
+                //alert(data.speed);
+                data.location = new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y);
+                geoData = data;
+                //svgLayer_point.addChild(svg_Geo);
+                var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 0, 300);
+                var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                polygon = new XiaoFu.SVG_Polygon(0, "polygon0", gp);
+                polygon.fill = "#C1D5EB";
+                polygon.stroke = "blue";
+                polygon.strokeWidth = "1";
+                svgLayer_polygon.addChild(polygon);
+
+
+                var marker = new XiaoFu.Marker(0, "beijing", pointDest[0].x, pointDest[0].y);
+                marker.w = 20;
+                marker.h = 20;
+
+                marker.url = "../image/bullet-blue.png";
+                markerLayer.addChild(marker);
+                //map.panTo(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y));
+                var path2 = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 3000, 30);
+                var gp2 = new XiaoFu.GeoPolygon([path2], "WGS84");
+                var viewExt = gp2.getExtent();
+                map.viewByExtent(viewExt);
+
+                setTimeout(function () {
+                    showRegionDynamic(0);
+                }, 1000);
+            });
+
+            control.addEventListener("ClearLocation", function (evt) {
+                svgLayer_polygon.removeAll();
+                markerLayer.removeAll();
+                count = 0;
+                step = 0;
+            });
+            map.addControl(control);
+        });
+        var dy = [
+        { from: 10, to: 1, step: 50, time: 1000 },
+        { from: 1, to: 3, step: 15, time: 400 },
+        { from: 3, to: 1, step: 15, time: 200 }
+        ];
+        var count = 0;
+        var step = 0;
+        function showRegionDynamic(c) {
+            if (count < dy.length) {
+                if (step == dy[count].step) {
+                    count++;
+                    step = 0;
+                    showRegionDynamic(c);
+                }
+                else if (step < dy[count].step) {
+                    var radio = dy[count].from - step * (dy[count].from - dy[count].to) / dy[count].step;
+                    var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(geoData.location.x, geoData.location.y), geoData.accuracy * radio, 300);
+                    var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                    polygon.geometry = gp;
+                    svgLayer_polygon.updateChild(polygon);
+                    step++;
+                    setTimeout(function () {
+                        showRegionDynamic(c);
+                    }, dy[count].time / dy[count].step);
+                }
+            }
+
+        }
+
+        function showMessage(msg) {
+            $("#MapContainer").message({ addMessage: { message: msg, timer: 5000, actionType: "immediately", type: "info"} });
+
+        };
+        
+        </script>
+    <style type="text/css">
+        html,body,div
+        {
+            padding:0px;
+            margin:0px;
+           
+         }
+         html,body
+         {
+              width:100%;
+            height:100%;  
+            overflow:hidden;
+             }
+    
+    </style>
+  </head>
+  <body>
+    <div class="sidetap">
+      <div class="stp-nav">
+        <div>
+          <nav>
+            <a href="#" class="selected">Selected Nav Item</a>
+            <a href="#">Second Nav Item</a>
+            <a href="#">Third Nav Item</a>
+            <a href="#">Fourth Nav Item</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="stp-content" id="content">
+        <header class="stp-fake-header">&nbsp;</header>
+        <div class="stp-overlay nav-toggle">&nbsp;</div>
+          <!-- Content Divs Look Like This -->
+          <div class="stp-content-panel">
+              <header>
+            <a href="javascript:void(0)" class="header-button icon menu">
+                <span>Menu</span>
+            </a>
+            <h1>小付手机地图</h1>
+          </header>
+            <div style="padding-top:44px;">
+              <div id="MapContainer" style=" z-index: 0; position: relative; border: 0px solid blue;
+                  width: 100%; height: 100%;">
+              </div>
+              </div>
+          </div>
+        <!-- End content Div -->
+      </div>
+    </div>
+    
+
+       <script type="text/javascript" src="../Frame/harvesthq-Sidetap-ddc2e33/src/sidetap.js"></script>
+    <script>
+        var st = sidetap();
+        $(".header-button.menu").on("click", st.toggle_nav)
+    </script>
+  </body>
+</html>

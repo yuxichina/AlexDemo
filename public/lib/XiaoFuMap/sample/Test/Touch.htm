@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+
+<html >
+<head>
+    <title>GetLayerByUrl</title>
+   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        var map, control, layer, glayer;
+        function load() {
+          //  $("#MapContainer").touchStart(touchStart).touchMove(touchMove);
+            map = new XiaoFu.Map("#MapContainer");
+            layer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            map.addLayer(layer);
+            glayer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=s@115&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            glayer.isBaseLayer = false;
+            glayer.setVisiable(false);
+            map.addLayer(glayer);
+        }
+        function showMap(index) {
+            if (index == 1) {
+                glayer.hide();
+                layer.show();
+            }
+            else {
+                glayer.show();
+                layer.hide();
+            }
+        };
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+        var startX, startY;
+        function touchMove() {
+            event = event || window.event;
+            event.cancleBubble = true;
+        // event.preventDefault();
+         if (!event.touches.length) return;
+         var touch = event.touches[0],
+              x = touch.pageX - startX,
+              y = touch.pageY - startY;
+         var res = map.getResolution();
+         //map.panTo(map.pointToMap(new XiaoFu.Point(x,y)));
+         showMsg("touchMove" + x + "__" + y);
+        };
+        function touchStart(event) {
+            // event.preventDefault();
+            event = event || window.event;
+            event.cancleBubble = true;
+            if (!event.touches.length) return;
+            var touch = event.touches[0];
+            startX = touch.pageX;
+            startY = touch.pageY;
+        }
+    </script>
+</head>
+<body onload="load()" style="-webkit-user-select:none; -webkit-text-size-adjust:none; display:block;">
+    <div id="MapContainer" style="z-index: 10000; -webkit-user-select:none; border: 1px solid blue; position: relative; 
+        width: 200px; height: 200px; display:block;" ontouchstart="touchStart()" ontouchmove="touchMove()"  >
+    </div>     
+    <input type="button" value="影像地图" onclick="showMap(0);" />
+    <input type="button" value="矢量地图" onclick="showMap(1);" />
+    <div id="msg">
+    </div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>距离量算-服务器端</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            var initExtent = new XiaoFu.Extent(7142275.922966868, 2338361.569300118, 16926215.54346943, 7230331.379551399);
+            map = new XiaoFu.Map("#MapContainer", initExtent);
+            var layer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            layer.picFormat = "png";
+            layer.isBaseLayer = true;
+            map.addLayer(layer);
+
+        }
+
+        function measure() {
+            var svgLayer_line = new XiaoFu.SVGLayers("line");
+            map.addLayer(svgLayer_line);
+
+            var myArray_db = new Array(3);
+            myArray_db[0] = new XiaoFu.GeoPoint(13717083.347944587, 6662862.881562252);
+            myArray_db[1] = new XiaoFu.GeoPoint(13834490.623390619, 5782308.315717021);
+            myArray_db[2] = new XiaoFu.GeoPoint(13443133.038570516, 5234407.696968878);
+            var myArray = new Array(4);
+            myArray[0] = new XiaoFu.GeoPoint(13423565.159329511, 5567061.644065965);
+            myArray[1] = new XiaoFu.GeoPoint(12640849.989689305, 4882185.870630785);
+            myArray[2] = new XiaoFu.GeoPoint(12777825.144376341, 4001631.3047855543);
+            myArray[3] = new XiaoFu.GeoPoint(13364861.521606496, 4373421.010364652);
+            var m_geoLine = new XiaoFu.GeoLine();
+            var m_geoArray = new Array();
+            m_geoArray[0] = myArray_db;
+            //m_geoArray[1] = myArray;
+            m_geoLine.path = m_geoArray;
+            var line_db = new XiaoFu.SVG_Line(0, "line0", m_geoLine);
+            line_db.strokeWidth = 10;
+            svgLayer_line.addChild(line_db);
+
+            var spatialReference = map.getSpatialReference();
+            var furl = "http://192.168.0.23/gismapserver/query.ashx";
+            spatialReference = spatialReference.replace("EPSG:", "");
+            var measure = new XiaoFu.Measure();
+            measure.getDistanceByServer(m_geoArray, spatialReference, furl, fun);
+        }
+        function fun(distance) {
+            var txt = "距离：";
+            for (var i in distance.result) {
+                var u = distance.result[i];
+                txt += "<br/>";
+                txt += u.value;
+                txt += u.unit.cc;
+            }
+            showMsg(txt);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+     
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>  
+    <input type="button" value="measure" onclick="measure()" />
+    <div id="msg">
+    </div>
+</body>
+</html>

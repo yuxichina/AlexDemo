@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>根据像素距离平移</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer);
+        }
+        function showMsg(_msg) {
+            $("#msg").html(_msg);
+        }
+        function panBy(radio) {            
+            var panPixel = 20 * radio;
+            map.panBy(panPixel * map.getResolution(), 0, true);
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 500px;">
+    </div>
+    <input type="button" value="左平移20像素" onclick="panBy(1)" />
+    <input type="button" value="右平移20像素" onclick="panBy(-1)" />
+    <div id="msg">
+    </div>
+</body>
+</html>

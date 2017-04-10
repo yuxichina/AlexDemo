@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, user-scalable=0, minimum-scale=0.8, maximum-scale=0.8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>Track</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.1/css/bootstrap.css" />
+    <style>
+        #trackMapContainer{
+            background-image: url(/images/map.png);
+            width: 1061px;
+            height: 523px;
+        }
+        .trackMapFrame{
+            position: relative;
+            min-height:300px;
+            overflow: hidden;
+        }
+        .trackMapFlag{
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 1061px;
+            height: 523px;
+        }
+
+        .point {
+            width: 10px;
+            height: 10px;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            background: red;
+        }
+        .circle{
+            width: 26px;
+            height: 26px;
+            opacity: 0;
+            
+            -moz-border-radius: 26px;
+            -webkit-border-radius: 26px;
+            border-radius: 26px;
+            border:6px solid  red;
+            background-color: transparent;
+
+            animation-name: circle;
+            animation-duration: 3s;
+            animation-timing-function: linear;
+            animation-delay: 0s;
+            animation-iteration-count: 1;
+            animation-direction: alternate;
+            animation-play-state: running;
+            /* Firefox: */
+            -moz-animation-name: circle;
+            -moz-animation-duration: 3s;
+            -moz-animation-timing-function: linear;
+            -moz-animation-delay: 0s;
+            -moz-animation-iteration-count: 1;
+            -moz-animation-direction: alternate;
+            -moz-animation-play-state: running;
+            /* Safari 和 Chrome: */
+            -webkit-animation-name: circle;
+            -webkit-animation-duration: 3s;
+            -webkit-animation-timing-function: linear;
+            -webkit-animation-delay: 0s;
+            -webkit-animation-iteration-count: 1;
+            -webkit-animation-direction: alternate;
+            -webkit-animation-play-state: running;
+            /* Opera: */
+            -o-animation-name: circle;
+            -o-animation-duration: 3s;
+            -o-animation-timing-function: linear;
+            -o-animation-delay: 0s;
+            -o-animation-iteration-count: 1;
+            -o-animation-direction: alternate;
+            -o-animation-play-state: running;
+        }
+
+        .line {
+            height: 10px;
+            opacity: 0.7;
+            width: 100px;
+            border-radius: 25px;
+            background: blue;
+
+            transform-origin: 3px 3px;
+            -webkit-transform-origin: 3px 3px;
+            -ms-transform-origin: 3px 3px;
+            -o-transform-origin: 3px 3px;
+            -moz-transform-origin: 3px 3px;
+
+            transform: rotate(0deg);
+            -ms-transform: rotate(0deg);		/* IE 9 */
+            -webkit-transform: rotate(0deg);	/* Safari and Chrome */
+            -o-transform: rotate(0deg);		/* Opera */
+            -moz-transform: rotate(0deg);
+
+
+        }
+
+        @keyframes circle
+        {
+            0%   { opacity: 1}
+            100% { opacity: 0}
+        }
+
+        @-moz-keyframes circle /* Firefox */
+        {
+            0%   { opacity: 1}
+            100% {opacity: 0}
+        }
+
+        @-webkit-keyframes circle /* Safari 和 Chrome */
+        {
+            0%   { opacity: 1}
+            100% {opacity: 0}
+        }
+
+        @-o-keyframes circle /* Opera */
+        {
+            0%   { opacity: 1}
+            100% {opacity: 0}
+        }
+
+        /*@-webkit-keyframes line !* Safari 和 Chrome *!*/
+        /*{*/
+        /*0%   { width: 0% ;opacity: 0.7;}*/
+        /*100% { width: 100%; opacity: 0.7;}*/
+        /*}*/
+
+        .product-item{
+            height: 100px;
+            opacity: .7;
+            padding: 0;
+        }
+        .product-item .product-img{
+            height: 80px;
+            width: 160px;
+
+        }
+        .product-item .product-content{
+            font-size: 20px;
+            padding-left:  30px;
+            height: 100%;
+            bottom: 0px;
+            vertical-align: middle;
+            line-height: 100px;
+
+
+
+        }
+        .product-item-container{
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 trackMapFrame">
+            <div class="trackMapFlag">
+                <div id="trackMapContainer" style="    position: relative;">
+                    <!--<div class="point" style="position: absolute; left: 100px; top: 100px;"></div>-->
+                    <!--<div class="circle " style="position: absolute; left: 92px; top: 92px;"></div>-->
+                    <!--<div class="line " style="position: absolute; left: 200px; top: 200px;"></div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <ul id="trackMapList" class="list-group">
+                <!--<li class="list-group-item product-item">Cras justo odio</li>-->
+                <!--<li class="list-group-item">Dapibus ac facilisis in</li>-->
+                <!--<li class="list-group-item">Morbi leo risus</li>-->
+                <!--<li class="list-group-item">Porta ac consectetur ac</li>-->
+                <!--<li class="list-group-item">Vestibulum at eros</li>-->
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="http://cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="/javascripts/track.js"> </script>
+<script>
+    $(document).ready(function(){
+//            trackMap.addPoint('blue', 200, 100);
+//            trackMap.addPoint('green', 300, 200);
+//            trackMap.addPath('blue', 200, 100, 300, 200);
+        trackMap.panTo(500, 536, 202);
+        setTimeout(function(){
+            trackMap.list([
+                {
+                    text: "胜利酒庄",
+                    url:"http://www.7xlcsz.com1.z0.glb.clouddn.com/7090a8d0-17ef-11e6-b6fe-e5f943fb80b1.png",
+                    x: 536,
+                    y: 202,
+                    color: "green",
+                    fontColor: "white"
+                },
+                {
+                    text: "小付咖啡",
+                    url:"http://www.7xlcsz.com1.z0.glb.clouddn.com/f18dd250-165a-11e6-8a23-fd13a67ace4c.png",
+                    x: 816,
+                    y: 206,
+                    color: "rgb(145, 245, 113)",
+                    fontColor: "gray"
+                },
+                {
+                    text: "香港小付咖啡",
+                    url:"http://www.7xlcsz.com1.z0.glb.clouddn.com/f18dd250-165a-11e6-8a23-fd13a67ace4c.png",
+                    x: 809,
+                    y: 267,
+                    color: "white",
+                    fontColor: "black"
+                }
+            ]);
+
+        }, trackMap)
+
+//            setTimeout(function(){
+//                trackMap.addPoint('green', 536, 202);
+//                trackMap.addPath('blue', 536, 202, 816, 206, function(){
+//                    trackMap.addPoint('blue', 816, 206);
+//                });
+//
+//
+//            }, 500);
+//
+//            setTimeout(function(){
+//                trackMap.addPoint('green', 600, 200);
+//                trackMap.addPath('blue', 600, 200, 700, 300, function(){
+//                    trackMap.addPoint('blue', 700, 300);
+//                });
+//
+//
+//            }, 500);
+    })
+
+</script>
+</body>
+</html>

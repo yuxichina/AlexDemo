@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">       
+        var map, control, layer, glayer;
+        var movestart = false;
+        //平移开始点地理坐标
+        var holdGeoPoint = null;
+        //平移开始点像素所标
+        var holdPoint = null;
+        //平移开始container位置
+        var holdPosition = null;
+
+        //var holdCenter = null;
+        var svgLayer_point;
+        var svgLayer_location;
+        var scalestart = false;
+        //var vmouseGeo = null;
+        //var scaleExtent = null;
+        var vmousePoint = null;
+        var vmouseGeos = null;
+        var vmousePoints = null;
+        var paning = false;
+        $(document).ready(function () {
+            var h = $(document).height();
+            var w = $(document).width();
+            $("#MapContainer").width(w).height(h);
+            map = new XiaoFu.Map("#MapContainer");
+            layer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+            map.addLayer(layer);           
+            svgLayer_point = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_point);
+            svgLayer_location = new XiaoFu.SVGLayers("point");
+            map.addLayer(svgLayer_location);
+            map._setDraggable(false);
+            map.addEventListener("loaded", function () {
+                paning = false;
+            });
+            $("#MapContainer").message();
+            $("#MapContainer").bind('mousedown', function (event) {
+                event.preventDefault();
+                svgLayer_point.removeAll();
+                vmouseGeos = new Array();
+                vmousePoints = new Array();
+                
+                var px = event.pageX;
+                var py = event.pageY;
+                var startX = $("#MapContainer").offset().left;
+                var startY = $("#MapContainer").offset().top;
+                var x = px - startX;
+                var y = py - startY;
+                x = Math.round(x);
+                y = Math.round(y);
+                vmousePoints[0] = new XiaoFu.Point(x, y);
+                vmouseGeos[0] = map.pointToMap(vmousePoints[0]);
+                var svg_Geo = new XiaoFu.SVG_Point(0, "touch" + 0, vmouseGeos[0].x, vmouseGeos[0].y);
+                svg_Geo.fill = "blue";
+                svgLayer_point.addChild(svg_Geo);
+                if (!movestart && !scalestart) {
+                    movestart = true;
+                    var px = event.pageX;
+                    var py = event.pageY;
+                    var startX = $("#MapContainer").offset().left;
+                    var startY = $("#MapContainer").offset().top;
+                    var x = px - startX;
+                    var y = py - startY;
+                    x = Math.round(x);
+                    y = Math.round(y);
+                    holdPoint = new XiaoFu.Point(x, y);
+                    holdPosition = new XiaoFu.Point(startX, startY);
+                    holdGeoPoint = map.pointToMap(holdPoint);
+                }            
+                
+            });
+            $("#MapContainer").bind('mousemove', function (event) {
+               event.preventDefault();              
+
+                //鼠标点页面坐标
+                var px = event.pageX;
+                var py = event.pageY;
+                var startX = $("#MapContainer").offset().left;
+                var startY = $("#MapContainer").offset().top;
+                var x = px - startX;
+                var y = py - startY;
+                x = Math.round(x);
+                y = Math.round(y);
+                //鼠标点相对于MapContainer坐标
+                if (movestart && !paning && !scalestart) {
+                    paning = true;
+                    var loadExtent = map.getCurrentExtent();
+                    var res = map.getBaseLayer().resolution;
+                    var mGeo = holdGeoPoint;
+                    var mOffsetX = (mGeo.x - loadExtent.minX) / res;
+                    var mOffsetY = (loadExtent.maxY - mGeo.y) / res;
+                    var mLeft = x - mOffsetX;
+                    var mTop = y - mOffsetY;
+                    var left = holdGeoPoint.x - x * res;
+                    var top = holdGeoPoint.y + y * res;
+                    var right = $("#layerContainer").width() * res + left;
+                    var bottom = top - $("#layerContainer").height() * res;
+                    var extent = new XiaoFu.Extent(left, bottom, right, top);
+                    map.viewByExtent(extent);
+                    $("#MapContainer").message({ addMessage: { message: "offsetX:" + mLeft + "_offsetY:" + mTop, timer: 5000, actionType: "immediately", type: "info"} });
+                    paning = false;
+                }
+            });
+            $("#MapContainer").bind('mouseup', function (event) {
+                event.preventDefault();
+                var px = event.pageX;
+                var py = event.pageY;
+                var startX = $("#MapContainer").offset().left;
+                var startY = $("#MapContainer").offset().top;
+                var x = px - startX;
+                var y = py - startY;
+                x = Math.round(x);
+                y = Math.round(y);
+                if (movestart && !paning && !scalestart) {
+                    movestart = false;
+                    var res = map.getBaseLayer().resolution;
+                    var left = holdGeoPoint.x - x * res;
+                    var top = holdGeoPoint.y + y * res;
+                    var right = $("#layerContainer").width() * res + left;
+                    var bottom = top - $("#layerContainer").height() * res;
+                    var extent = new XiaoFu.Extent(left, bottom, right, top);
+                    map.viewByExtent(extent);
+                    var lcLeft = $("#layerContainer").position().left;
+                    var lcTop = $("#layerContainer").position().top;
+                    $("#MapContainer").message({ addMessage: { message: lcLeft + ":" + lcTop, timer: 5000, actionType: "immediately", type: "info"} });
+                    $("#layerContainer").css("left", 0).css("top", 0);
+                }
+            });
+            
+        }); 
+    </script>
+
+    <style>
+    body,html,div
+    {
+        
+            padding:0px;
+            margin:0px;
+        }
+   
+    
+    </style>
+</head>
+<body>
+   <div id="MapContainer" style="z-index: 10000; border: 0px solid blue; position: relative;
+                padding: 0px; margin: 0px; ">
+                <canvas id="zoomMask" style="width:100%; height:100%; position:absolute; z-index:10004">
+                
+                </canvas>
+   </div>
+</body>
+</html>

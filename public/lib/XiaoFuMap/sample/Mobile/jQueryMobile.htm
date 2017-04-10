@@ -1,0 +1,249 @@
+﻿<!DOCTYPE>
+<html>
+<head>
+    <title>小付手机地图jQuery</title>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-app-status-bar-style" content="white" />
+    <link rel="Shortcut Icon" href="../image/maps.png">
+    <style type="text/css">
+        html, body, div
+        {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+    <link rel="apple-touch-icon" href="../image/globe.png" />
+    <link rel="apple-touch-startup-image" href="../image/globe.png" />
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script src="../Frame/jQueryMobile/jQueryMobile.js" type="text/javascript"></script>
+    <link href="../Frame/jQueryMobile/jQueryMobile.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        var map, svgLayer_polygon, markerLayer, polygon, geoData;
+        var mapLayer, satelliteLayer;
+        var control = null;
+        window.onresize = function () {
+            var position = $("#MapContainer").position();
+            var h = $("body").height()
+             - parseInt(position.top)
+            - parseInt($("#MapContainer").css("margin-bottom"))
+            - parseInt($("#MapContainer").css("margin-top"))
+            - parseInt($("#MapContainer").css("padding-top"))
+            - parseInt($("#MapContainer").css("padding-bottom"))
+            - parseInt($("#MapContainer").css("border-top-width"))
+            - parseInt($("#MapContainer").css("border-bottom-width"));
+            var w = $("body").width()
+             - parseInt(position.left)
+            - parseInt($("#MapContainer").css("margin-right"))
+            - parseInt($("#MapContainer").css("margin-left"))
+            - parseInt($("#MapContainer").css("padding-left"))
+            - parseInt($("#MapContainer").css("padding-left"))
+            - parseInt($("#MapContainer").css("border-left-width"))
+            - parseInt($("#MapContainer").css("border-right-width"));
+            if (map) {
+                map.resize(new XiaoFu.Size(w, h - 50), 0);
+            }
+            else {
+                $("#MapContainer").css("width", w).css("height", h - 50);
+            }
+            //alert(h);
+
+        }
+        $(document).ready(function () {
+            $.mobile.touchOverflowEnabled = true;
+            //获取Content页面实际大小
+            var position = $("#MapContainer").position();
+            var h = $("body").height()
+             - parseInt(position.top)
+            - parseInt($("#MapContainer").css("margin-bottom"))
+            - parseInt($("#MapContainer").css("margin-top"))
+            - parseInt($("#MapContainer").css("padding-top"))
+            - parseInt($("#MapContainer").css("padding-bottom"))
+            - parseInt($("#MapContainer").css("border-top-width"))
+            - parseInt($("#MapContainer").css("border-bottom-width"));
+            var w = $("body").width()
+             - parseInt(position.left)
+            - parseInt($("#MapContainer").css("margin-right"))
+            - parseInt($("#MapContainer").css("margin-left"))
+            - parseInt($("#MapContainer").css("padding-left"))
+            - parseInt($("#MapContainer").css("padding-left"))
+            - parseInt($("#MapContainer").css("border-left-width"))
+            - parseInt($("#MapContainer").css("border-right-width"));
+            $("#MapContainer").css("width", parseInt(w)).css("height", parseInt(h - 50));
+            //初始化地图
+            map = new XiaoFu.Map("#MapContainer");
+            //创建GoogleMap图层
+            mapLayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            satelliteLayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Satellite);
+            map.addLayer(mapLayer);
+            //创建SVG图层
+            svgLayer_polygon = new XiaoFu.SVGLayers("polygon");
+            map.addLayer(svgLayer_polygon);
+            //创建MarkerLayer图层
+            markerLayer = new XiaoFu.MarkerLayers("marker");
+            markerLayer.isPolymerization = false;
+            map.addLayer(markerLayer);
+            $("#MapContainer").message();
+            //创建导航控件
+            control = new XiaoFu.Navigation();
+            //添加监听进行定位
+            control.addEventListener("GetLocation", function (evtType, data) {
+                var destProj = new XiaoFu.Projection("EPSG:900913");
+                var sourceProj = new XiaoFu.Projection("WGS84");
+                var pointSource = new XiaoFu.GeoPoint(data.location.x, data.location.y);
+                var transform = new XiaoFu.Transform();
+                var pointDest = transform.transform(sourceProj, destProj, [pointSource]);
+                var svg_Geo = new XiaoFu.SVG_Point(0, "location", pointDest[0].x, pointDest[0].y);
+                svg_Geo.fill = "blue";
+                data.location = new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y);
+                geoData = data;
+                var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 0, 300);
+                var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                polygon = new XiaoFu.SVG_Polygon(0, "polygon0", gp);
+                polygon.fill = "#C1D5EB";
+                polygon.stroke = "blue";
+                polygon.strokeWidth = "1";
+                svgLayer_polygon.addChild(polygon);
+
+                var marker = new XiaoFu.Marker(0, "beijing", pointDest[0].x, pointDest[0].y);
+                marker.w = 20;
+                marker.h = 20;
+
+                marker.url = "../image/bullet-blue.png";
+                markerLayer.addChild(marker);
+                //map.panTo(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y));
+                var path2 = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(pointDest[0].x, pointDest[0].y), 3000, 30);
+                var gp2 = new XiaoFu.GeoPolygon([path2], "WGS84");
+                var viewExt = gp2.getExtent();
+                map.viewByExtent(viewExt);
+
+                setTimeout(function () {
+                    showRegionDynamic(0);
+                }, 1000);
+            });
+
+            control.addEventListener("ClearLocation", function (evt) {
+                svgLayer_polygon.removeAll();
+                markerLayer.removeAll();
+                count = 0;
+                step = 0;
+            });
+            map.addControl(control);
+        });
+        var dy = [
+        { from: 10, to: 1, step: 10, time: 500 },
+        { from: 1, to: 3, step: 5, time: 40 },
+        { from: 3, to: 1, step: 5, time: 20 }
+        ];
+        var count = 0;
+        var step = 0;
+        function showRegionDynamic(c) {
+            if (count < dy.length) {
+                if (step == dy[count].step) {
+                    count++;
+                    step = 0;
+                    showRegionDynamic(c);
+                }
+                else if (step < dy[count].step) {
+                    var radio = dy[count].from - step * (dy[count].from - dy[count].to) / dy[count].step;
+                    var path = XiaoFu.Utils.pointToCircle(new XiaoFu.GeoPoint(geoData.location.x, geoData.location.y), geoData.accuracy * radio, 300);
+                    var gp = new XiaoFu.GeoPolygon([path], "WGS84");
+                    polygon.geometry = gp;
+                    svgLayer_polygon.updateChild(polygon);
+                    step++;
+                    setTimeout(function () {
+                        showRegionDynamic(c);
+                    }, dy[count].time / dy[count].step);
+                }
+            }
+
+        }
+
+        function showMessage(msg) {
+            $("#MapContainer").message({ addMessage: { message: msg, timer: 5000, actionType: "immediately", type: "info"} });
+        };
+
+        //切换地图
+        function switchMap(mapType) {
+
+            if (mapType == "map") {
+                map.removeLayer(satelliteLayer.id);
+                //mapLayer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@191000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+                mapLayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+                map.addLayer(mapLayer);
+            }
+            else {
+                map.removeLayer(mapLayer.id);
+                //mapLayer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@180000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+                satelliteLayer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Satellite);
+                map.addLayer(satelliteLayer);
+                // mapLayer = new XiaoFu.GoogleCacheLayer("http://mt{0}.google.cn/vt/lyrs=m@191000000&hl=zh-CN&gl=cn&src=app&x={1}&y={2}&z={3}&s=Gal");
+                // map.addLayer(mapLayer);
+
+            }
+
+
+        }
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mapPage">
+        <div data-role="header" data-theme="b">
+            <a href="#listDialog" data-rel="dialog" data-icon="home" data-iconpos="notext"></a>
+            <a href="#navPage" class="ui-btn-right" data-icon="grid" data-iconpos="notext">列表</a>
+            <h1>
+                小付手机地图</h1>
+        </div>
+        <!-- /header -->
+        <div data-role="content" data-title="小付手机地图" id="MapContainer" style="z-index: 0;
+            border: 0px solid blue; position: relative; width: 100%; height: 100%; padding: 0px;">
+            <div data-role="fieldcontain" style="position: absolute; right: 20px; top: 20px;
+                font-size: 20px; margin: 0px;">
+                <select name="mapSwitch" id="mapSwitch" data-role="slider" data-theme="b" onchange="switchMap(this.value);">
+                    <option value="map">矢量地图</option>
+                    <option value="satellite">卫星地图</option>
+                </select>
+            </div>
+        </div>
+        <div data-role="footer" data-theme="b" style="padding: 0px 10px;">
+            <input type="search" name="search" id="search-basic" value="" />
+        </div>
+    </div>
+    <div data-role="page" id="navPage">
+        <div data-role="header" data-theme="b">
+            <a href="#mapPage" data-icon="back" data-mini="true" data-iconpos="notext">返回地图</a>
+            <h1>
+                小付手机地图</h1>
+        </div>
+        <div data-role="content" id="NavBar" data-theme="b">
+            <ul data-role="listview">
+                <li><a href="#">距离量算</a></li>
+                <li><a href="#">下载客户端</a></li>
+                <li><a href="#">地图信息</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- /page -->
+    <div id="listDialog" data-role="dialog">
+        <div data-role="header" data-theme="b">
+            <h1 role="heading">
+                周边信息</h1>
+        </div>
+        <div data-role="content" data-theme="b">
+            <div data-role="controlgroup" data-type="horizontal" data-theme="b">
+                <a href="index.html" data-role="button">餐饮</a> <a href="index.html" data-role="button">
+                    购物</a> <a href="index.html" data-role="button">住宿</a> <a href="index.html" data-role="button">
+                        出游</a> <a href="index.html" data-role="button">娱乐</a> <a href="index.html" data-role="button">
+                            服务</a>
+            </div>
+            <div data-role="controlgroup" data-type="horizontal" data-theme="b">
+                <a href="index.html" data-role="button">教育</a> <a href="index.html" data-role="button">
+                    健康</a> <a href="index.html" data-role="button">企业</a> <a href="index.html" data-role="button">
+                        部门</a> <a href="index.html" data-role="button">娱乐</a> <a href="index.html" data-role="button">
+                            服务</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

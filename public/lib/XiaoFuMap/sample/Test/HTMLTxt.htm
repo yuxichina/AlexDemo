@@ -1,0 +1,159 @@
+﻿<!DOCTYPE HTML> 
+<html> 
+<head> 
+<title>html5_canvas_shape_fill</title>
+<style> 
+body {margin: 0px;padding: 0px;}
+</style> 
+<script>
+    var context, nowTimes = 0, time = 1000 / 30, times = 30, clearX = 10;
+    var context2, nowTimes2 = 0, time2 = 1000 / 30, times2 = 30, clearX2 = 10;
+window.onload = function () {
+    var canvas = document.getElementById("myCanvas");
+    context = canvas.getContext("2d");
+    var canvas2 = document.getElementById("myCanvas2");
+    context2 = canvas2.getContext("2d");
+    drawUp();
+    drawUp2();
+};
+var width = 400, height = 30, startX=50, topPixel=10;
+function drawUp() {
+    if (nowTimes <= times) {
+
+        var offset = clearX * (15- Math.abs(nowTimes - 15)) / 30;
+        var offset2 = clearX * (30 -Math.abs(nowTimes - 30)) / 30;
+        var t = nowTimes + topPixel;
+        if (nowTimes != 0) {
+            context.fillStyle = "#000000";
+            context.clearRect(0, 0, 500, 100);
+            context.beginPath();
+            context.moveTo(startX - offset, t - offset);
+            context.lineTo(startX + width + offset, t - offset);
+            context.lineTo(startX + width - clearX + offset2, topPixel + offset);
+            context.lineTo(startX + clearX - offset2, topPixel + offset);
+            context.lineTo(startX - offset, t - offset);
+            context.fillStyle = "#8ED6FF";
+            context.stroke();
+            context.closePath();
+            context.fill();
+        }
+            if (nowTimes != times) {
+                context.beginPath();
+                context.moveTo(50 - offset, t - offset);
+                context.lineTo(450 + offset, t - offset);
+                context.lineTo(450 - offset2, 30 + topPixel + offset);
+                context.lineTo(50 + offset2, 30 + topPixel + offset);
+                context.lineTo(50 - offset, t - offset);
+
+                context.fillStyle = "#8ED6FF";
+                context.stroke();
+                context.closePath();
+                context.fill();
+            }
+//        context.beginPath();
+//        context.moveTo(50, t);
+//        context.lineTo(450, t);
+//        context.lineTo(450 + (clearX / 30) * offset, 30);
+//        context.lineTo(50 + (clearX / 30) * offset, 30);
+//        context.lineTo(50, t);
+//        context.fillStyle = "#8ED6FF";
+//        context.stroke();
+//        context.closePath();
+//        context.fill();
+
+//        context.beginPath();
+//        context.moveTo(450 + (clearX / 30) * offset, 30);
+//        context.lineTo(450, t);
+//        context.lineTo(450 + (clearX - (clearX / 30)) /2, 5);
+//        context.lineTo(450 + (clearX - (clearX / 30)) / 2, 25 - t);
+//        context.lineTo(450 + (clearX / 30) * offset, 30);
+//        context.fillStyle = "#8ED6FF";
+//        context.stroke();
+//        context.closePath();
+//        context.fill();
+
+//        context.beginPath();
+//        context.moveTo(50, t);
+//        context.lineTo(450, t);
+//        context.lineTo(450  + clearX - (clearX / 30) * offset, 0);
+//        context.lineTo(50 + clearX - (clearX / 30) * offset, 0);
+//        context.lineTo(50, t);
+//        context.fillStyle = "#8ED6FF";
+//        context.stroke();
+//        context.closePath();
+//        context.fill();
+        //       
+        context.fillStyle = "#000000";
+        context.fillText(t - offset, 200, t, 20);
+        
+        //        context.moveTo(0, 0);
+        context.restore();
+        nowTimes++;
+        //setTimeout(drawUp, 100);
+    }
+    else {
+        nowTimes = 0;
+        drawUp();
+    }
+
+}
+var totalTimes = 0;
+function drawUp2() {
+    if (nowTimes2 <= times2) {
+
+        var offset = clearX2 * (15 - Math.abs(nowTimes2 - 15)) / 30;
+        var offset2 = clearX2 * (30 - Math.abs(nowTimes2 - 30)) / 30;
+        var t = nowTimes2 + topPixel;
+        if (nowTimes2 != 0) {
+            context2.fillStyle = "#000000";
+            context2.clearRect(0, 0, 500, 100);
+            context2.beginPath();
+            context2.moveTo(startX - offset, t - offset );
+            context2.lineTo(startX + width + offset, t - offset);
+            context2.lineTo(startX + width - clearX2 + offset2, topPixel - offset );
+            context2.lineTo(startX + clearX - offset2, topPixel - offset);
+            context2.lineTo(startX - offset, t - offset );
+            context2.fillStyle = "#8ED6FF";
+            context2.stroke();
+            context2.closePath();
+            context2.fill();
+        }
+        
+        if (nowTimes2 != times2) {
+            context2.beginPath();
+            context2.moveTo(50 - offset, t - offset);
+            context2.lineTo(450 + offset, t - offset );
+            context2.lineTo(450 - offset2, 30 + topPixel + offset );
+            context2.lineTo(50 + offset2, 30 + topPixel + offset );
+            context2.lineTo(50 - offset, t - offset);
+
+            context2.fillStyle = "#8ED6FF";
+             context2.stroke();
+            context2.closePath();
+            context2.fill();
+            context2.fillStyle = "#000000";
+            context2.fillText(totalTimes % 4 + 1, 200, (30 + topPixel + t)/2, 20);
+        }
+        context2.fillStyle = "#000000";
+        
+        context2.restore();
+        nowTimes2++;
+        setTimeout(drawUp2, 50);
+    }
+    else {
+        nowTimes2 = 1;
+        totalTimes+=2;
+        setTimeout(drawUp2, 50);
+    }
+
+}
+</script> 
+</head> 
+<body> 
+	<canvas id="myCanvas" width="500" height="100"> 
+	</canvas> 
+    <canvas id="myCanvas2" width="500" height="100"> 
+	</canvas> 
+    <input type="button" onclick = "drawUp2();" value="do" />
+</body> 
+</html> 

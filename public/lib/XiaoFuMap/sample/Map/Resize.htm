@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>重置地图大小</title>
+    <script src="../../lib/XiaoFuMap.js" type="text/javascript"></script>
+    <script type="text/javascript">  
+        var map;
+        function load() {
+            map = new XiaoFu.Map("#MapContainer");
+            var layer = new XiaoFu.GoogleCacheLayer(GoogleUrl.Map);
+            map.addLayer(layer); 
+           
+        }
+        var k = true;
+        function resizeByLeft() {
+            if (k) {
+                map.resize(new XiaoFu.Size(500, 300), 0);
+                k = false;
+            }
+            else {
+                map.resize(new XiaoFu.Size(1000, 600),0);
+                k = true;
+            }
+        }
+        function resizeByCenter() {
+            if (k) {
+                map.resize(new XiaoFu.Size(500, 300), 1);
+                k = false;
+            }
+            else {
+                map.resize(new XiaoFu.Size(1000, 600), 1);
+                k = true;
+            }
+        }
+        function showMsg(msg) {
+            $("#msg").html(msg);
+
+        }
+    </script>
+</head>
+<body onload="load()">
+    <div id="MapContainer" style="z-index: 10000; border: 1px solid blue; position: relative;
+        width: 1000px; height: 600px;">
+    </div>  
+    <input type="button" value="Resize（角点）" onclick="resizeByLeft()" />
+    <input type="button" value="Resize（中心点）" onclick="resizeByCenter()" /> 
+    <div id="msg"></div>
+    <div id="info" ></div>
+</body>
+</html>
